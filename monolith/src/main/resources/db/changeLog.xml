@@ -31,6 +31,17 @@
                 <constraints nullable="false" foreignKeyName="shoporder_article_article_fk" referencedColumnNames="id"/>
             </column>
         </createTable>
+        
+        <createTable tableName="articlestock">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="article_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="articlestock_article_fk" referencedColumnNames="id"/>
+            </column>
+            <column name="count" type="int"/>
+        </createTable>
+        <createSequence sequenceName="hibernate_sequence" startValue="100000"/>
 
         <sql>
             insert into article (id, name, price) values (1, 'Article 1', 12.99);

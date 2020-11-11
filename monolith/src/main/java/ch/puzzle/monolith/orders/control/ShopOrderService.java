@@ -6,9 +6,9 @@ import javax.enterprise.context.ApplicationScoped;
 import java.util.List;
 
 @ApplicationScoped
-public class OrderService {
+public class ShopOrderService {
 
-    public List<ShopOrder> findAll() {
+    public List<ShopOrder> listAll() {
         return ShopOrder.listAll();
     }
 }
