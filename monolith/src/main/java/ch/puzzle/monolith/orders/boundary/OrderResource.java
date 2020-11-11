@@ -1,7 +1,7 @@
 package ch.puzzle.monolith.orders.boundary;
 
 import ch.puzzle.monolith.orders.control.OrderService;
-import ch.puzzle.monolith.orders.entity.Order;
+import ch.puzzle.monolith.orders.entity.ShopOrder;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -18,7 +18,7 @@ public class OrderResource {
     OrderService orderService;
 
     @GET
-    public List<Order> hello() {
+    public List<ShopOrder> hello() {
         return orderService.findAll();
     }
 }
