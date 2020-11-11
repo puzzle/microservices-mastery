@@ -25,6 +25,7 @@ services:
       - monolith-db
     environment:
       - QUARKUS_HTTP_PORT=8080
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://monolith-db:5432/admin
 
   grafana:
     image: grafana/grafana
