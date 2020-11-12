@@ -6,6 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class ArticleStockService {
+
     public void orderArticle(Long articleId) throws ArticleOutOfStockException {
         ArticleStock articleStock = ArticleStock.find("article_id", articleId).singleResult();
         if (articleStock.getCount() == 0)

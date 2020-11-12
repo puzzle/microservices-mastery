@@ -1,11 +1,13 @@
 package ch.puzzle.monolith.orders.boundary;
 
+import ch.puzzle.monolith.monkey.control.ChaosMonkey;
 import ch.puzzle.monolith.orders.control.ShopOrderService;
 import ch.puzzle.monolith.orders.entity.ShopOrder;
 import ch.puzzle.monolith.orders.entity.ShopOrderDTO;
 import ch.puzzle.monolith.stock.control.ArticleOutOfStockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.eclipse.microprofile.metrics.annotation.Counted;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -25,12 +27,15 @@ public class ShopOrderResource {
     ShopOrderService shopOrderService;
 
     @GET
+    @ChaosMonkey(errors = true, latency = true)
     public List<ShopOrder> listAll() {
         return shopOrderService.listAll();
     }
 
     @POST
     @Transactional
+    @Counted(name = "monolith_order_create", absolute = true)
+    @ChaosMonkey(errors = true, latency = true)
     public Response createShopOrder(ShopOrderDTO shopOrderDTO) {
         try {
             ShopOrder shopOrder = shopOrderService.createOrder(shopOrderDTO);
