@@ -1,0 +1,121 @@
+kind: List
+apiVersion: v1
+metadata:
+  name: openshift-test-list
+  labels:
+    application: openshift-test
+  annotations:
+    iconClass: icon-java
+    tags: java,microservice,quarkus,b4u
+items:
+
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      labels:
+        application: openshift-test
+        template: openshift-test-template
+      name: monolith
+
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      labels:
+        application: openshift-test
+        template: openshift-test-template
+        database: smartme
+      name: monolith
+    spec:
+      replicas: 1
+      selector:
+        deploymentConfig: monolith
+      strategy:
+        activeDeadlineSeconds: 1200
+        rollingParams:
+          maxSurge: 0
+          maxUnavailable: 1
+        type: Rolling
+      template:
+        metadata:
+          labels:
+            application: openshift-test
+            deploymentConfig: monolith
+          name: monolith
+        spec:
+          containers:
+            - env:
+                - name: QUARKUS_DATASOURCE_JDBC_URL
+                  value: jdbc:postgresql://postgres:5432/testuser
+                - name: QUARKUS_DATASOURCE_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-credentials
+                      key: username
+                - name: QUARKUS_DATASOURCE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-credentials
+                      key: password
+              image: monolith
+              imagePullPolicy: Always
+              livenessProbe:
+                failureThreshold: 5
+                httpGet:
+                  path: /health
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 3
+                periodSeconds: 20
+                successThreshold: 1
+                timeoutSeconds: 15
+              readinessProbe:
+                failureThreshold: 5
+                httpGet:
+                  path: /health
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 3
+                periodSeconds: 20
+                successThreshold: 1
+                timeoutSeconds: 15
+              name: monolith
+              ports:
+                - containerPort: 8080
+                  name: http
+                  protocol: TCP
+              resources:
+                limits:
+                  cpu: 1
+                  memory: 1Gi
+                requests:
+                  cpu: 40m
+                  memory: 128Mi
+              terminationMessagePath: /dev/termination-log
+      triggers:
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - monolith
+            from:
+              kind: ImageStreamTag
+              name: monolith:latest
+          type: ImageChange
+        - type: ConfigChange
+
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        application: openshift-test
+        template: openshift-test-template
+      name: monolith
+    spec:
+      ports:
+        - name: monolith-http
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+      selector:
+        deploymentConfig: monolith
+      sessionAffinity: None
+      type: ClusterIP
