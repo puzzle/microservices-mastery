@@ -25,7 +25,7 @@ public class ShopOrderResource {
     ShopOrderService shopOrderService;
 
     @GET
-    public List<ShopOrder> hello() {
+    public List<ShopOrder> listAll() {
         return shopOrderService.listAll();
     }
 
