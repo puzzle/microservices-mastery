@@ -26,7 +26,7 @@ public class ChaosMonkeyInterceptor {
 
     @AroundInvoke
     public Object monkey(InvocationContext context) throws Exception {
-        MonkeyConfig config = monkeyService.getConfig(context.getMethod().getDeclaringClass().getSimpleName());
+        MonkeyConfig config = monkeyService.getMonkeyConfig(context.getMethod().getDeclaringClass(), context.getMethod());
         if(config.isEnabled()) {
             ChaosMonkey monkeyAnnotation = context.getMethod().getAnnotation(ChaosMonkey.class);
 
@@ -44,6 +44,14 @@ public class ChaosMonkeyInterceptor {
             if(monkeyAnnotation.latency() && config.getLatencyMs() > 0L) {
                 LOG.warn("ChaosMonkey strikes. LatencyMs=" + (config.getLatencyMs()));
                 Thread.sleep(config.getLatencyMs());
+            }
+
+            // RateLimit
+            if(monkeyAnnotation.rateLimit() && config.getPermitsPerSec() < Long.MAX_VALUE) {
+                double waitedMs = config.getRateLimiter().acquire(1);
+                if(waitedMs >= 1) {
+                    LOG.warn("ChaosMonkey strikes. RateLimit throttled. Throttled=" + (waitedMs));
+                }
             }
         }
 

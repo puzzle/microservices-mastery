@@ -19,4 +19,6 @@ public @interface ChaosMonkey {
     boolean latency() default true;
     @Nonbinding
     boolean errors() default true;
+    @Nonbinding
+    boolean rateLimit() default true;
 }

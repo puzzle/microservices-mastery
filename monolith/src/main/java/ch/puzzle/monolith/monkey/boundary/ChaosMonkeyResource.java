@@ -7,7 +7,6 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Map;
 
 @Path("/chaos-monkey")
 @Produces(MediaType.APPLICATION_JSON)
@@ -24,12 +23,12 @@ public class ChaosMonkeyResource {
 
     @PUT
     public void update(MonkeyConfig config) {
-        monkeyService.addConfig(config, null);
+        monkeyService.addMonkeyConfig(config, null);
     }
 
     @PUT
     @Path("/{class}")
     public void createSpecific(@PathParam("class") String clazz, MonkeyConfig config) {
-        monkeyService.addConfig(config, clazz);
+        monkeyService.addMonkeyConfig(config, clazz);
     }
 }
