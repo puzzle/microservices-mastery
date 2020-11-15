@@ -67,9 +67,9 @@ public class ChaosMonkeyService {
     public void removeMonkey(String callerId) {
         if (callerId != null && this.classMonkeys.containsKey(callerId)) {
             this.classMonkeys.remove(callerId);
+        } else {
+            throw new NotFoundException("Monkey '" + callerId + "' not found");
         }
-
-        throw new NotFoundException("Monkey '"+callerId+"' not found");
     }
 
     String toCallerId(Class<?> clazz, Method method) {

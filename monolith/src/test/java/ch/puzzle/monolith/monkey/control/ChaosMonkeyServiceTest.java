@@ -107,7 +107,6 @@ class ChaosMonkeyServiceTest {
     @Test
     void toCallerId() {
         final ChaosMonkeyService myService = new ChaosMonkeyService();
-        assertNull(myService.toCallerId(null, "string"));
         assertEquals(myService.toCallerId("myClass", null), "myClass");
         assertEquals(myService.toCallerId("myClass", ""), "myClass");
         assertEquals(myService.toCallerId("myClass", "myMethod"), "myClass#myMethod");
@@ -126,7 +125,7 @@ class ChaosMonkeyServiceTest {
         classMonkey.setEnabled(true);
 
         // when
-        myService.addMonkey(classMonkey, null);
+        myService.addMonkey(defaultMonkey, null);
         myService.addMonkey(classMonkey, "myClass");
         Monkey beforeRemoval = myService.getMonkey("myClass");
         myService.removeMonkey("myClass");
