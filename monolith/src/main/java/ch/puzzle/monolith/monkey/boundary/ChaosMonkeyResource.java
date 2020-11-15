@@ -1,7 +1,7 @@
 package ch.puzzle.monolith.monkey.boundary;
 
 import ch.puzzle.monolith.monkey.control.ChaosMonkeyService;
-import ch.puzzle.monolith.monkey.entity.MonkeyConfig;
+import ch.puzzle.monolith.monkey.control.Monkey;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -16,19 +16,25 @@ public class ChaosMonkeyResource {
     @Inject
     ChaosMonkeyService monkeyService;
 
+    @Inject
+    ClassMonkeySubResource classMonkeySubResource;
+
+    @Inject
+    MethodMonkeySubResource methodMonkeySubResource;
+
+    @Path("/{class}")
+    public ClassMonkeySubResource classMonkey() { return classMonkeySubResource; }
+
+    @Path("/{class}/{method}")
+    public MethodMonkeySubResource methodMonkey() { return methodMonkeySubResource; }
+
     @GET
     public Response list() {
-        return Response.ok(monkeyService.getFullConfig()).build();
+        return Response.ok(monkeyService.getAllMonkeys()).build();
     }
 
     @PUT
-    public void update(MonkeyConfig config) {
-        monkeyService.addMonkeyConfig(config, null);
-    }
-
-    @PUT
-    @Path("/{class}")
-    public void createSpecific(@PathParam("class") String clazz, MonkeyConfig config) {
-        monkeyService.addMonkeyConfig(config, clazz);
+    public void update(Monkey monkey) {
+        monkeyService.addMonkey(monkey, null, null);
     }
 }

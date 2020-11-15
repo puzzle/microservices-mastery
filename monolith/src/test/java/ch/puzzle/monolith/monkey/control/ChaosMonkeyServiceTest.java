@@ -1,6 +1,5 @@
 package ch.puzzle.monolith.monkey.control;
 
-import ch.puzzle.monolith.monkey.entity.MonkeyConfig;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,66 +7,69 @@ import static org.junit.jupiter.api.Assertions.*;
 class ChaosMonkeyServiceTest {
 
     @Test
-    void assert_defaultConfig_expect_empty() {
+    void defaultMonkey_expect_notNullAndDisabled() {
         final ChaosMonkeyService myService = new ChaosMonkeyService();
-        assertEquals(myService.getDefaultConfig(), new MonkeyConfig());
+        assertNotNull(myService.getDefaultMonkey());
+        assertFalse(myService.getDefaultMonkey().isEnabled());
     }
 
     @Test
-    void monkeyConfig_add_default_expect_empty() {
+    void addMonkey_expect_same() {
         final ChaosMonkeyService myService = new ChaosMonkeyService();
+        final Monkey monkey = new Monkey();
 
         // when
-        myService.addMonkeyConfig(new MonkeyConfig(), null);
+        myService.addMonkey(monkey, null);
 
-        assertEquals(myService.getMonkeyConfig(null), new MonkeyConfig());
+        assertEquals(myService.getMonkey(null), monkey);
     }
 
     @Test
-    void monkeyConfig_add_class_expect_same() {
+    void addClassMonkey_expect_same() {
         // given
         final ChaosMonkeyService myService = new ChaosMonkeyService();
-        final MonkeyConfig config = new MonkeyConfig();
-        config.setEnabled(true);
-        config.setErrorRate(0.5D);
+        final Monkey monkey = new Monkey();
+        monkey.setEnabled(true);
+        monkey.setErrorRate(0.5D);
 
         // when
-        myService.addMonkeyConfig(config, "myClass");
+        myService.addMonkey(monkey, "myClass");
 
         // then
-        assertEquals(myService.getMonkeyConfig("myClass"), config);
+        assertEquals(myService.getMonkey("myClass"), monkey);
     }
 
     @Test
-    void monkeyConfig_add_classWithMethod_expect_same() {
+    void addMethodMonkey_expect_sameForMethod() {
         // given
         final ChaosMonkeyService myService = new ChaosMonkeyService();
-        final MonkeyConfig config = new MonkeyConfig();
-        config.setEnabled(true);
-        config.setErrorRate(0.5D);
+        final Monkey monkey = new Monkey();
+        monkey.setEnabled(true);
+        monkey.setErrorRate(0.5D);
 
         // when
-        myService.addMonkeyConfig(config, "myClass", "myMethod");
+        myService.addMonkey(monkey, "myClass", "myMethod");
 
         // then
-        assertEquals(myService.getMonkeyConfig("myClass", "myMethod"), config);
+        assertEquals(myService.getMonkey("myClass", "myMethod"), monkey);
+        assertNotEquals(myService.getMonkey("myClass"), monkey);
     }
 
     @Test
-    void monkeyConfig_getMonkeyConfig_expect_default() {
+    void getMonkey_expect_default() {
         // given
         final ChaosMonkeyService myService = new ChaosMonkeyService();
-        final MonkeyConfig mcDefault = new MonkeyConfig();
+        final Monkey mcDefault = new Monkey();
         mcDefault.setErrorRate(1.0D);
         mcDefault.setEnabled(true);
 
         // when
-        myService.addMonkeyConfig(mcDefault, null);
-        MonkeyConfig mc1 = myService.getMonkeyConfig(null);
-        MonkeyConfig mc2 = myService.getMonkeyConfig("myClass");
-        MonkeyConfig mc3 = myService.getMonkeyConfig("myClass", null);
-        MonkeyConfig mc4 = myService.getMonkeyConfig(null, "myMethod");
-        MonkeyConfig mc5 = myService.getMonkeyConfig("myClass", "myMethod");
+        myService.addMonkey(mcDefault, null);
+        Monkey mc1 = myService.getMonkey(null);
+        Monkey mc2 = myService.getMonkey("myClass");
+        Monkey mc3 = myService.getMonkey("myClass", null);
+        Monkey mc4 = myService.getMonkey(null, "myMethod");
+        Monkey mc5 = myService.getMonkey("myClass", "myMethod");
 
         // then
         assertEquals(mc1, mcDefault);
@@ -78,20 +80,20 @@ class ChaosMonkeyServiceTest {
     }
 
     @Test
-    void monkeyConfig_getMonkeyConfig_expect_fallback() {
+    void getMonkey_expect_fallback() {
         // given
         final ChaosMonkeyService myService = new ChaosMonkeyService();
-        final MonkeyConfig mcClass = new MonkeyConfig();
+        final Monkey mcClass = new Monkey();
         mcClass.setErrorRate(1.0D);
         mcClass.setEnabled(true);
 
         // when
-        myService.addMonkeyConfig(mcClass, "myClass");
-        MonkeyConfig mc1 = myService.getMonkeyConfig(null);
-        MonkeyConfig mc2 = myService.getMonkeyConfig("myClass");
-        MonkeyConfig mc3 = myService.getMonkeyConfig("myClass", null);
-        MonkeyConfig mc4 = myService.getMonkeyConfig(null, "myMethod");
-        MonkeyConfig mc5 = myService.getMonkeyConfig("myClass", "myMethod");
+        myService.addMonkey(mcClass, "myClass");
+        Monkey mc1 = myService.getMonkey(null);
+        Monkey mc2 = myService.getMonkey("myClass");
+        Monkey mc3 = myService.getMonkey("myClass", null);
+        Monkey mc4 = myService.getMonkey(null, "myMethod");
+        Monkey mc5 = myService.getMonkey("myClass", "myMethod");
 
         // then
         assertNotEquals(mc1, mcClass);
@@ -102,11 +104,37 @@ class ChaosMonkeyServiceTest {
         assertEquals(mc5, mcClass);
     }
 
-    void monkeyConfig_toCallerId() {
+    @Test
+    void toCallerId() {
         final ChaosMonkeyService myService = new ChaosMonkeyService();
         assertNull(myService.toCallerId(null, "string"));
         assertEquals(myService.toCallerId("myClass", null), "myClass");
         assertEquals(myService.toCallerId("myClass", ""), "myClass");
         assertEquals(myService.toCallerId("myClass", "myMethod"), "myClass#myMethod");
+    }
+
+    @Test
+    void deleteMonkey() {
+        // given
+        final ChaosMonkeyService myService = new ChaosMonkeyService();
+        final Monkey defaultMonkey = new Monkey();
+        defaultMonkey.setErrorRate(0.5D);
+        defaultMonkey.setEnabled(false);
+
+        final Monkey classMonkey = new Monkey();
+        classMonkey.setErrorRate(1.0D);
+        classMonkey.setEnabled(true);
+
+        // when
+        myService.addMonkey(classMonkey, null);
+        myService.addMonkey(classMonkey, "myClass");
+        Monkey beforeRemoval = myService.getMonkey("myClass");
+        myService.removeMonkey("myClass");
+        Monkey afterRemoval = myService.getMonkey("myClass");
+
+        // then
+        assertEquals(beforeRemoval, classMonkey);
+        assertNotEquals(afterRemoval, classMonkey);
+        assertEquals(afterRemoval, defaultMonkey);
     }
 }

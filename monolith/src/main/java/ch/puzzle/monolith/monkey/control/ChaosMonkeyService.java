@@ -1,10 +1,9 @@
 package ch.puzzle.monolith.monkey.control;
 
-import ch.puzzle.monolith.monkey.entity.MonkeyConfig;
 import com.google.common.base.Strings;
-import com.google.common.util.concurrent.RateLimiter;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.ws.rs.NotFoundException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,57 +11,65 @@ import java.util.Map;
 @ApplicationScoped
 public class ChaosMonkeyService {
 
-    private MonkeyConfig defaultConfig = new MonkeyConfig();
-    public Map<String, MonkeyConfig> classConfigs = new HashMap<>();
+    private Monkey defaultMonkey = new Monkey();
+    public Map<String, Monkey> classMonkeys = new HashMap<>();
 
     private static String DEFAULT_ID = "DEFAULT";
     private static String DELIMITER = "#";
 
-    public MonkeyConfig getDefaultConfig() {
-        return this.defaultConfig;
+    public Monkey getDefaultMonkey() {
+        return this.defaultMonkey;
     }
 
-    public MonkeyConfig getMonkeyConfig(Class<?> clazz, Method method) {
-        return this.getMonkeyConfig(this.toCallerId(clazz, method));
+    public Monkey getMonkey(Class<?> clazz, Method method) {
+        return this.getMonkey(this.toCallerId(clazz, method));
     }
 
-    public MonkeyConfig getMonkeyConfig(String clazzName, String methodName) {
-        return this.getMonkeyConfig(this.toCallerId(clazzName, methodName));
+    public Monkey getMonkey(String clazzName, String methodName) {
+        return this.getMonkey(this.toCallerId(clazzName, methodName));
     }
 
-    MonkeyConfig getMonkeyConfig(String callerId) {
+    Monkey getMonkey(String callerId) {
         if (callerId != null) {
-            if (classConfigs.containsKey(callerId)) {
-                return classConfigs.get(callerId);
+            if (classMonkeys.containsKey(callerId)) {
+                return classMonkeys.get(callerId);
             } else if (callerId.contains(DELIMITER)) {
                 String clazz = callerId.split(DELIMITER)[0];
-                if (classConfigs.containsKey(clazz)) {
-                    return classConfigs.get(clazz);
+                if (classMonkeys.containsKey(clazz)) {
+                    return classMonkeys.get(clazz);
                 }
             }
         }
 
-        return this.defaultConfig;
+        return this.defaultMonkey;
     }
 
-    public void addMonkeyConfig(MonkeyConfig config, Class<?> clazz, Method method) {
-        this.addMonkeyConfig(config, this.toCallerId(clazz, method));
+    public void addMonkey(Monkey monkey, String clazzName, String methodName) {
+        this.addMonkey(monkey, this.toCallerId(clazzName, methodName));
     }
 
-    public void addMonkeyConfig(MonkeyConfig config, String clazzName, String methodName) {
-        this.addMonkeyConfig(config, this.toCallerId(clazzName, methodName));
-    }
-
-    public void addMonkeyConfig(MonkeyConfig config, String callerId) {
-        if (config == null) {
+    void addMonkey(Monkey monkey, String callerId) {
+        if (monkey == null) {
             return;
         }
 
         if (callerId == null) {
-            this.defaultConfig = config;
+            this.defaultMonkey = monkey;
         } else {
-            this.classConfigs.put(callerId, config);
+            this.classMonkeys.put(callerId, monkey);
         }
+    }
+
+    public void removeMonkey(String clazzName, String methodName) {
+        this.removeMonkey(this.toCallerId(clazzName, methodName));
+    }
+
+    public void removeMonkey(String callerId) {
+        if (callerId != null && this.classMonkeys.containsKey(callerId)) {
+            this.classMonkeys.remove(callerId);
+        }
+
+        throw new NotFoundException("Monkey '"+callerId+"' not found");
     }
 
     String toCallerId(Class<?> clazz, Method method) {
@@ -89,9 +96,9 @@ public class ChaosMonkeyService {
         }
     }
 
-    public Map<String, MonkeyConfig> getFullConfig() {
-        Map<String, MonkeyConfig> config = new HashMap<String, MonkeyConfig>(classConfigs);
-        config.put(DEFAULT_ID, defaultConfig);
+    public Map<String, Monkey> getAllMonkeys() {
+        Map<String, Monkey> config = new HashMap<String, Monkey>(classMonkeys);
+        config.put(DEFAULT_ID, defaultMonkey);
         return config;
     }
 }
