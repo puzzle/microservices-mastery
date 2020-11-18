@@ -1,4 +1,4 @@
-package ch.puzzle.monolith.orders.entity;
+package ch.puzzle.rest.stock.entity;
 
 public class ArticleOrderDTO {
     public Long articleId;

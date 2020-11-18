@@ -1,12 +1,14 @@
-package ch.puzzle.monolith.article.control;
+package ch.puzzle.rest.article.control;
 
-import ch.puzzle.monolith.article.entity.Article;
+import ch.puzzle.rest.article.entity.Article;
+import org.eclipse.microprofile.opentracing.Traced;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.List;
 
 @ApplicationScoped
+@Traced
 public class ArticleService {
 
     @Inject
@@ -14,9 +16,5 @@ public class ArticleService {
 
     public List<Article> listAll() {
         return articleRepository.listAll();
-    }
-
-    public Article findById(Long articleId) {
-        return articleRepository.findById(articleId);
     }
 }

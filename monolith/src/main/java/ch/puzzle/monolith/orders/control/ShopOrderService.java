@@ -1,5 +1,6 @@
 package ch.puzzle.monolith.orders.control;
 
+import ch.puzzle.monolith.article.control.ArticleService;
 import ch.puzzle.monolith.article.entity.Article;
 import ch.puzzle.monolith.orders.entity.*;
 import ch.puzzle.monolith.stock.control.ArticleOutOfStockException;
@@ -18,7 +19,7 @@ public class ShopOrderService {
     ArticleStockService articleStockService;
 
     @Inject
-    ShopOrderRepository shopOrderRepository;
+    ArticleService articleService;
 
     public List<ShopOrder> listAll() {
         return ShopOrder.listAll();
@@ -29,9 +30,9 @@ public class ShopOrderService {
         ShopOrder shopOrder = new ShopOrder();
         List<Article> articles = new ArrayList<>();
         for (ArticleOrderDTO articleOrder : shopOrderDTO.articleOrders) {
-            Object article = Article.findById(articleOrder.articleId);
+            Article article = articleService.findById(articleOrder.articleId);
             articleStockService.orderArticle(articleOrder.articleId, articleOrder.amount);
-            articles.add((Article) article);
+            articles.add(article);
         }
         shopOrder.setArticles(articles);
         shopOrder.setStatus(ShopOrderStatus.NEW);

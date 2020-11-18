@@ -1,6 +1,6 @@
-package ch.puzzle.monolith.stock.control;
+package ch.puzzle.rest.stock.control;
 
-import ch.puzzle.monolith.stock.entity.ArticleStock;
+import ch.puzzle.rest.stock.entity.ArticleStock;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+@Traced
 @ApplicationScoped
 public class ArticleStockService {
 
@@ -16,7 +17,6 @@ public class ArticleStockService {
     @Inject
     ArticleStockRepository articleStockRepository;
 
-    @Traced
     public void orderArticle(Long articleId, int amount) throws ArticleOutOfStockException {
         ArticleStock articleStock = articleStockRepository.find("article_id", articleId).singleResult();
         if (articleStock.getCount() < amount)

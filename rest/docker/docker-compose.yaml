@@ -6,7 +6,7 @@ services:
     volumes:
       - order-db-data:/var/lib/postgresql/data/
     networks:
-      monolith:
+      rest:
         aliases:
           - order-db
     environment:
@@ -16,7 +16,7 @@ services:
       - 5432:5432
 
   order:
-    image: mm-order:latest
+    image: mm-rest-order:latest
     ports:
       - 8080:8080
     networks:
@@ -32,7 +32,7 @@ services:
     volumes:
       - stock-db-data:/var/lib/postgresql/data/
     networks:
-      monolith:
+      rest:
         aliases:
           - stock-db
     environment:
@@ -42,7 +42,7 @@ services:
       - 5433:5432
 
   stock:
-    image: mm-stock:latest
+    image: mm-rest-stock:latest
     ports:
       - 8081:8080
     networks:
@@ -50,7 +50,7 @@ services:
     depends_on:
       - stock-db
     environment:
-      - QUARKUS_HTTP_PORT=8081
+      - QUARKUS_HTTP_PORT=8080
       - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://stock-db:5432/admin
 
   grafana:
