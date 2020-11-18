@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
@@ -17,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+@ApplicationScoped
 @Path("/shop-orders")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -24,7 +26,7 @@ public class ShopOrderResource {
 
     private final Logger log = LoggerFactory.getLogger(ShopOrderResource.class.getName());
 
-    private int successfulOrders = 0;
+    private static int successfulOrders = 0;
 
     @Inject
     ShopOrderService shopOrderService;
@@ -44,7 +46,7 @@ public class ShopOrderResource {
         try {
             ShopOrder shopOrder = shopOrderService.createOrder(shopOrderDTO);
             shopOrder.persist();
-            successfulOrders++;
+            registerSuccessfulOrder();
             return Response.ok(shopOrder).build();
         } catch (ArticleOutOfStockException e) {
             log.error(e.getMessage());
@@ -53,7 +55,7 @@ public class ShopOrderResource {
     }
 
     @Counted(name = "monolith_order_create_success", absolute = true, description = "number of orders successful", tags = {"application=monolith", "resource=ShopOrderResource"})
-    public int getSuccessfulOrders() {
-        return successfulOrders;
+    public int registerSuccessfulOrder() {
+        return successfulOrders++;
     }
 }
