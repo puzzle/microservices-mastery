@@ -11,7 +11,7 @@ public class NotFoundExceptionMapper implements ExceptionMapper<EntityNotFoundEx
 
     @Override
     public Response toResponse(EntityNotFoundException exception) {
-        return Response.status(404)
+        return Response.status(Response.Status.NOT_FOUND)
                 .entity(Json.createObjectBuilder()
                         .add("message", exception.getMessage())
                         .build())
