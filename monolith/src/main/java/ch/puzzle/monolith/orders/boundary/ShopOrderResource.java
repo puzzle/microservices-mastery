@@ -5,10 +5,10 @@ import ch.puzzle.monolith.orders.control.ShopOrderService;
 import ch.puzzle.monolith.orders.entity.ShopOrder;
 import ch.puzzle.monolith.orders.entity.ShopOrderDTO;
 import ch.puzzle.monolith.stock.control.ArticleOutOfStockException;
+import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.eclipse.microprofile.metrics.annotation.Counted;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -42,16 +42,11 @@ public class ShopOrderResource {
     @Counted(name = "monolith_order_create_request", absolute = true, description = "number of orders requested", tags = {"application=monolith", "resource=ShopOrderResource"})
     @Timed(name = "monolith_order_create_timer", description = "timer for processing a order creation", tags = {"application=monolith", "resource=ShopOrderResource"})
     @ChaosMonkey
-    public Response createShopOrder(ShopOrderDTO shopOrderDTO) {
-        try {
-            ShopOrder shopOrder = shopOrderService.createOrder(shopOrderDTO);
-            shopOrder.persist();
-            registerSuccessfulOrder();
-            return Response.ok(shopOrder).build();
-        } catch (ArticleOutOfStockException e) {
-            log.error(e.getMessage());
-            return Response.serverError().header("message", e.getMessage()).build();
-        }
+    public Response createShopOrder(ShopOrderDTO shopOrderDTO) throws ArticleOutOfStockException {
+        ShopOrder shopOrder = shopOrderService.createOrder(shopOrderDTO);
+        shopOrder.persist();
+        registerSuccessfulOrder();
+        return Response.ok(shopOrder).build();
     }
 
     @Counted(name = "monolith_order_create_success", absolute = true, description = "number of orders successful", tags = {"application=monolith", "resource=ShopOrderResource"})
