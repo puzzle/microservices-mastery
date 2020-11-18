@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Consumes(MediaType.APPLICATION_JSON)
 @Path("/article-stocks")
@@ -20,15 +21,10 @@ public class ArticleStockResource {
     @Inject
     ArticleStockService articleStockService;
 
-    @GET
-    public String helloWorld() {
-        return "Hello world";
-    }
-
     @POST
     @Transactional
-    public Response createStockOrder(ShopOrderDTO shopOrderDTO) throws ArticleOutOfStockException {
-        for (ArticleOrderDTO articleOrder : shopOrderDTO.articleOrders) {
+    public Response createStockOrder(List<ArticleOrderDTO> articles) throws ArticleOutOfStockException {
+        for (ArticleOrderDTO articleOrder : articles) {
             articleStockService.orderArticle(articleOrder.articleId, articleOrder.amount);
         }
         return Response.ok().build();

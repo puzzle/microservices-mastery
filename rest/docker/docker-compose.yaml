@@ -26,6 +26,7 @@ services:
     environment:
       - QUARKUS_HTTP_PORT=8080
       - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://order-db:5432/admin
+      - APPLICATION_ARTICLESTOCK_API_URL=http://stock:8080/
 
   stock-db:
     image: postgres:11.9
