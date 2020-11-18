@@ -11,5 +11,7 @@
 
     <modules>
         <module>monolith</module>
+        <module>rest/rest-stock</module>
+        <module>rest/rest-order</module>
     </modules>
 </project>
