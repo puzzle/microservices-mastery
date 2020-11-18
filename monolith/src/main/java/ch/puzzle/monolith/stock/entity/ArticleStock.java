@@ -1,6 +1,6 @@
 package ch.puzzle.monolith.stock.entity;
 
-import ch.puzzle.monolith.orders.entity.Article;
+import ch.puzzle.monolith.article.entity.Article;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
 import javax.persistence.Entity;

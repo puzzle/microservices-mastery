@@ -1,14 +1,12 @@
 package ch.puzzle.monolith.stock.boundary;
 
 import ch.puzzle.monolith.monkey.control.ChaosMonkey;
-import ch.puzzle.monolith.orders.entity.Article;
+import ch.puzzle.monolith.article.entity.Article;
 import ch.puzzle.monolith.stock.entity.ArticleStock;
 import ch.puzzle.monolith.stock.entity.ArticleStockDTO;
 import ch.puzzle.monolith.stock.entity.StockUpdateDTO;
 import org.eclipse.microprofile.metrics.annotation.Counted;
-import org.eclipse.microprofile.metrics.annotation.Timed;
 
-import javax.interceptor.AroundInvoke;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
@@ -22,7 +20,7 @@ import java.util.List;
 public class ArticleStockResource {
 
     @GET
-    @ChaosMonkey(errors = true, latency = true)
+    @ChaosMonkey
     public List<ArticleStock> list() {
         return ArticleStock.listAll();
     }

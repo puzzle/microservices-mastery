@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.resource.spi.ConfigProperty;
 
 @ApplicationScoped
@@ -15,11 +16,14 @@ public class ArticleStockService {
 
     private final Logger log = LoggerFactory.getLogger(ArticleStockService.class.getName());
 
+    @Inject
+    ArticleStockRepository articleStockRepository;
+
     @ChaosMonkey
     @CircuitBreaker(requestVolumeThreshold = 2)
-    @Traced(operationName = "ArticleStockService::orderArticle")
+    @Traced
     public void orderArticle(Long articleId, int amount) throws ArticleOutOfStockException {
-        ArticleStock articleStock = ArticleStock.find("article_id", articleId).singleResult();
+        ArticleStock articleStock = articleStockRepository.find("article_id", articleId).singleResult();
         if (articleStock.getCount() < amount)
             throw new ArticleOutOfStockException("Article with id " + articleId + " is out of stock.");
         articleStock.setCount(articleStock.getCount() - amount);

@@ -52,7 +52,7 @@ Content-Type: application/json
   "enabled": true,
   "errorRate": 0,
   "latencyMs": 0,
-  "permitsPerSec": 0.5,
+  "permitsPerSec": 10,
   "rateLimiterType": "FAIL"
 }
 

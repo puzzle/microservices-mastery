@@ -1,5 +1,6 @@
 package ch.puzzle.monolith.orders.control;
 
+import ch.puzzle.monolith.article.entity.Article;
 import ch.puzzle.monolith.orders.entity.*;
 import ch.puzzle.monolith.stock.control.ArticleOutOfStockException;
 import ch.puzzle.monolith.stock.control.ArticleStockService;
@@ -16,11 +17,14 @@ public class ShopOrderService {
     @Inject
     ArticleStockService articleStockService;
 
+    @Inject
+    ShopOrderRepository shopOrderRepository;
+
     public List<ShopOrder> listAll() {
         return ShopOrder.listAll();
     }
 
-    @Traced(operationName = "ShopOrderService::createOrder")
+    @Traced
     public ShopOrder createOrder(ShopOrderDTO shopOrderDTO) throws ArticleOutOfStockException {
         ShopOrder shopOrder = new ShopOrder();
         List<Article> articles = new ArrayList<>();

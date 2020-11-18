@@ -1,7 +1,7 @@
 package ch.puzzle.monolith.article.boundary;
 
 import ch.puzzle.monolith.article.control.ArticleService;
-import ch.puzzle.monolith.orders.entity.Article;
+import ch.puzzle.monolith.article.entity.Article;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
