@@ -1,13 +1,9 @@
 package ch.puzzle.monolith.orders.control;
 
-import ch.puzzle.monolith.orders.entity.Article;
-import ch.puzzle.monolith.orders.entity.ShopOrder;
-import ch.puzzle.monolith.orders.entity.ShopOrderDTO;
-import ch.puzzle.monolith.orders.entity.ShopOrderStatus;
+import ch.puzzle.monolith.orders.entity.*;
 import ch.puzzle.monolith.stock.control.ArticleOutOfStockException;
 import ch.puzzle.monolith.stock.control.ArticleStockService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.microprofile.opentracing.Traced;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -24,12 +20,13 @@ public class ShopOrderService {
         return ShopOrder.listAll();
     }
 
+    @Traced(operationName = "ShopOrderService::createOrder")
     public ShopOrder createOrder(ShopOrderDTO shopOrderDTO) throws ArticleOutOfStockException {
         ShopOrder shopOrder = new ShopOrder();
         List<Article> articles = new ArrayList<>();
-        for (Long articleId : shopOrderDTO.articles) {
-            Object article = Article.findById(articleId);
-            articleStockService.orderArticle(articleId);
+        for (ArticleOrderDTO articleOrder : shopOrderDTO.articleOrders) {
+            Object article = Article.findById(articleOrder.articleId);
+            articleStockService.orderArticle(articleOrder.articleId, articleOrder.amount);
             articles.add((Article) article);
         }
         shopOrder.setArticles(articles);

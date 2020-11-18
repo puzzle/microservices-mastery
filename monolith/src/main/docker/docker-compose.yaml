@@ -2,7 +2,7 @@ version: '3'
 
 services:
   monolith-db:
-    image: postgres:11.2
+    image: postgres:11.9
     volumes:
       - db-data:/var/lib/postgresql/data/
     networks:
@@ -16,7 +16,7 @@ services:
       - 5432:5432
 
   monolith:
-    image: monolith:latest
+    image: puzzle/mm-monolith:latest
     ports:
       - 8080:8080
     networks:
