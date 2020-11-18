@@ -1,6 +1,5 @@
 package ch.puzzle.monolith.stock.boundary;
 
-import ch.puzzle.monolith.monkey.control.ChaosMonkey;
 import ch.puzzle.monolith.article.entity.Article;
 import ch.puzzle.monolith.stock.entity.ArticleStock;
 import ch.puzzle.monolith.stock.entity.ArticleStockDTO;
@@ -20,7 +19,6 @@ import java.util.List;
 public class ArticleStockResource {
 
     @GET
-    @ChaosMonkey
     public List<ArticleStock> list() {
         return ArticleStock.listAll();
     }
@@ -30,8 +28,8 @@ public class ArticleStockResource {
     @Transactional
     public Response create(ArticleStockDTO articleStockDTO) {
         Article article = Article.findById(articleStockDTO.articleId);
-        if(article == null) {
-            throw new EntityNotFoundException("Article "+articleStockDTO.articleId+" not found");
+        if (article == null) {
+            throw new EntityNotFoundException("Article " + articleStockDTO.articleId + " not found");
         }
 
         ArticleStock articleStock = new ArticleStock(article, articleStockDTO.count);
@@ -45,8 +43,8 @@ public class ArticleStockResource {
     @Transactional
     public Response update(@PathParam("id") Long id, StockUpdateDTO dto) {
         ArticleStock stock = ArticleStock.findById(id);
-        if(stock == null) {
-            throw new EntityNotFoundException("ArticleStock "+id+" not found");
+        if (stock == null) {
+            throw new EntityNotFoundException("ArticleStock " + id + " not found");
         }
 
         stock.setCount(dto.count);

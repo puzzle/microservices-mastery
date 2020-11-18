@@ -19,8 +19,6 @@ public class ArticleStockService {
     @Inject
     ArticleStockRepository articleStockRepository;
 
-    @ChaosMonkey
-    @CircuitBreaker(requestVolumeThreshold = 2)
     @Traced
     public void orderArticle(Long articleId, int amount) throws ArticleOutOfStockException {
         ArticleStock articleStock = articleStockRepository.find("article_id", articleId).singleResult();

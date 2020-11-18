@@ -1,6 +1,5 @@
 package ch.puzzle.monolith.orders.boundary;
 
-import ch.puzzle.monolith.monkey.control.ChaosMonkey;
 import ch.puzzle.monolith.orders.control.ShopOrderService;
 import ch.puzzle.monolith.orders.entity.ShopOrder;
 import ch.puzzle.monolith.orders.entity.ShopOrderDTO;
@@ -32,7 +31,6 @@ public class ShopOrderResource {
     ShopOrderService shopOrderService;
 
     @GET
-    @ChaosMonkey
     public List<ShopOrder> listAll() {
         return shopOrderService.listAll();
     }
@@ -41,7 +39,6 @@ public class ShopOrderResource {
     @Transactional
     @Counted(name = "monolith_order_create_request", absolute = true, description = "number of orders requested", tags = {"application=monolith", "resource=ShopOrderResource"})
     @Timed(name = "monolith_order_create_timer", description = "timer for processing a order creation", tags = {"application=monolith", "resource=ShopOrderResource"})
-    @ChaosMonkey
     public Response createShopOrder(ShopOrderDTO shopOrderDTO) throws ArticleOutOfStockException {
         ShopOrder shopOrder = shopOrderService.createOrder(shopOrderDTO);
         shopOrder.persist();
