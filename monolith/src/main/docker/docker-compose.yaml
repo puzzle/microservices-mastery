@@ -28,7 +28,7 @@ services:
       - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://monolith-db:5432/admin
 
   grafana:
-    image: grafana/grafana:7.3.2
+    image: grafana/grafana:7.3.3
     ports:
       - 3000:3000
     networks:
@@ -41,7 +41,7 @@ services:
       - ./config/grafana/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.22.2
     ports:
       - 9090:9090
     networks:
@@ -51,7 +51,7 @@ services:
       - ./config/prometheus/alert.rules:/etc/prometheus/alert.rules
 
   alertmanager:
-    image: prom/alertmanager:latest
+    image: prom/alertmanager:v0.21.0
     ports:
       - 9093:9093
     networks:
@@ -60,7 +60,7 @@ services:
       - ./config/alertmanager/alertmanager.yaml:/etc/alertmanager/alertmanager.yml
 
   jaeger:
-    image: jaegertracing/all-in-one:1.20.0
+    image: jaegertracing/all-in-one:1.21.0
     networks:
       - monolith
     ports:

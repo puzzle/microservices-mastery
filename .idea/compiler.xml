@@ -10,8 +10,8 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="microservice-mastery" target="1.5" />
       <module name="monolith" target="11" />
-      <module name="scom-microservices-mastery" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>
