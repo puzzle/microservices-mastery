@@ -31,4 +31,33 @@ Content-Type: application/json
 }
 
 ###
+# curl --location --request GET 'localhost:8080/chaos-monkey'
+GET localhost:8080/chaos-monkey
+
+###
+# curl --location --request PUT 'localhost:8080/chaos-monkey/ArticleStockService'
+#--header 'Content-Type: application/json'
+#--data-raw '{
+#        "enabled": true,
+#        "errorRate": 0,
+#        "latencyMs": 0,
+#        "permitsPerSec": 0.5,
+#        "rateLimiterType": "FAIL"
+#    }
+#'
+PUT localhost:8080/chaos-monkey/ArticleStockService
+Content-Type: application/json
+
+{
+  "enabled": true,
+  "errorRate": 0,
+  "latencyMs": 0,
+  "permitsPerSec": 0.5,
+  "rateLimiterType": "FAIL"
+}
+
+
+###
+
+
 

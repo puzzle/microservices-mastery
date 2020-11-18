@@ -1,8 +1,6 @@
 package ch.puzzle.monolith.stock.control;
 
-import javax.ws.rs.WebApplicationException;
-
-public class ArticleOutOfStockException extends WebApplicationException {
+public class ArticleOutOfStockException extends Exception {
 
     ArticleOutOfStockException(String message) {
         super(message);
