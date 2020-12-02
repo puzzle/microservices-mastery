@@ -6,11 +6,10 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class ArticleOutOfStockExceptionMapper extends TraceableExceptionMapper implements ExceptionMapper<ArticleOutOfStockException> {
+public class ArticleOutOfStockExceptionMapper implements ExceptionMapper<ArticleOutOfStockException> {
 
     @Override
     public Response toResponse(ArticleOutOfStockException exception) {
-        logTrace(exception);
         return Response.status(Response.Status.CONFLICT)
                 .entity(Json.createObjectBuilder()
                         .add("message", exception.getMessage())
