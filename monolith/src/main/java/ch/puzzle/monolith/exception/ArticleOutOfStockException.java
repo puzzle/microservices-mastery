@@ -1,8 +1,8 @@
-package ch.puzzle.monolith.stock.control;
+package ch.puzzle.monolith.exception;
 
 public class ArticleOutOfStockException extends Exception {
 
-    ArticleOutOfStockException(String message) {
+    public ArticleOutOfStockException(String message) {
         super(message);
     }
 }

@@ -1,5 +1,6 @@
 package ch.puzzle.monolith.stock.control;
 
+import ch.puzzle.monolith.exception.ArticleOutOfStockException;
 import ch.puzzle.monolith.stock.entity.ArticleStock;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.slf4j.Logger;
@@ -7,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.Optional;
 
 @ApplicationScoped
 public class ArticleStockService {
@@ -23,5 +25,9 @@ public class ArticleStockService {
             throw new ArticleOutOfStockException("Article with id " + articleId + " is out of stock.");
         articleStock.setCount(articleStock.getCount() - amount);
         log.info("Article with id {} processed", articleId);
+    }
+
+    public Optional<ArticleStock> findById(Long articleId) {
+        return Optional.of(articleStockRepository.findById(articleId));
     }
 }

@@ -1,16 +1,17 @@
 package ch.puzzle.monolith.exception;
 
 import javax.json.Json;
+import javax.persistence.EntityExistsException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class ArticleOutOfStockExceptionMapper implements ExceptionMapper<ArticleOutOfStockException> {
+public class EntityExistsExceptionMapper implements ExceptionMapper<EntityExistsException> {
 
     @Override
-    public Response toResponse(ArticleOutOfStockException exception) {
-        return Response.status(Response.Status.CONFLICT)
+    public Response toResponse(EntityExistsException exception) {
+        return Response.status(Response.Status.BAD_REQUEST)
                 .entity(Json.createObjectBuilder()
                         .add("message", exception.getMessage())
                         .build())

@@ -1,3 +1,9 @@
+# curl --request GET
+#  --url http://localhost:8080/shop-orders
+#  --header 'Content-Type: application/json'
+GET http://localhost:8080/shop-orders
+Content-Type: application/json
+
 ###
 
 # curl --verbose --location --request POST 'localhost:8080/shop-orders'
@@ -28,6 +34,50 @@ Content-Type: application/json
       "amount": 3
     }
   ]
+}
+
+###
+# curl --request GET
+#  --url http://localhost:8080/articles
+#  --header 'Content-Type: application/json'
+GET http://localhost:8080/articles
+Content-Type: application/json
+
+###
+# curl --request POST
+#  --url http://localhost:8080/articles
+#  --header 'Content-Type: application/json'
+#  --data '{
+#	"name": "Testartikel",
+#	"price": 10.00
+#}'
+POST http://localhost:8080/articles
+Content-Type: application/json
+
+{
+  "name": "Testartikel",
+  "price": 10.00
+}
+
+###
+# curl --request GET
+#  --url http://localhost:8080/article-stocks
+#  --header 'Content-Type: application/json'
+GET http://localhost:8080/article-stocks
+Content-Type: application/json
+
+###
+# curl --request PUT
+#  --url http://localhost:8080/article-stocks/1
+#  --header 'Content-Type: application/json'
+#  --data '{
+#	"count": 3
+#}'
+PUT http://localhost:8080/article-stocks/1
+Content-Type: application/json
+
+{
+  "count": 3
 }
 
 ###

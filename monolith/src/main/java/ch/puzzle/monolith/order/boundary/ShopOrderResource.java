@@ -3,7 +3,7 @@ package ch.puzzle.monolith.order.boundary;
 import ch.puzzle.monolith.order.control.ShopOrderService;
 import ch.puzzle.monolith.order.entity.ShopOrder;
 import ch.puzzle.monolith.order.entity.ShopOrderDTO;
-import ch.puzzle.monolith.stock.control.ArticleOutOfStockException;
+import ch.puzzle.monolith.exception.ArticleOutOfStockException;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.slf4j.Logger;
