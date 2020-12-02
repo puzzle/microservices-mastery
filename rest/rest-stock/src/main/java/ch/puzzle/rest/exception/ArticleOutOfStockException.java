@@ -1,7 +1,8 @@
-package ch.puzzle.rest.stock.control;
+package ch.puzzle.rest.exception;
+
 public class ArticleOutOfStockException extends Exception {
 
-    ArticleOutOfStockException(String message) {
+    public ArticleOutOfStockException(String message) {
         super(message);
     }
 }

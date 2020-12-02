@@ -16,7 +16,7 @@ services:
       - 5432:5432
 
   order:
-    image: mm-rest-order:latest
+    image: puzzle/mm-rest-order:latest
     ports:
       - 8080:8080
     networks:
@@ -43,7 +43,7 @@ services:
       - 5433:5432
 
   stock:
-    image: mm-rest-stock:latest
+    image: puzzle/mm-rest-stock:latest
     ports:
       - 8081:8080
     networks:
