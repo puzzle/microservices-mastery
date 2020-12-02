@@ -1,4 +1,4 @@
-package ch.puzzle.monolith.orders.entity;
+package ch.puzzle.monolith.order.entity;
 
 import ch.puzzle.monolith.article.entity.Article;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;

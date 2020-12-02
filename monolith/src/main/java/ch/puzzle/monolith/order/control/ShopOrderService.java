@@ -1,8 +1,8 @@
-package ch.puzzle.monolith.orders.control;
+package ch.puzzle.monolith.order.control;
 
 import ch.puzzle.monolith.article.control.ArticleService;
 import ch.puzzle.monolith.article.entity.Article;
-import ch.puzzle.monolith.orders.entity.*;
+import ch.puzzle.monolith.order.entity.*;
 import ch.puzzle.monolith.stock.control.ArticleOutOfStockException;
 import ch.puzzle.monolith.stock.control.ArticleStockService;
 import org.eclipse.microprofile.opentracing.Traced;

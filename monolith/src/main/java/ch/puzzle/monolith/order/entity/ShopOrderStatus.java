@@ -1,4 +1,4 @@
-package ch.puzzle.monolith.orders.entity;
+package ch.puzzle.monolith.order.entity;
 
 public enum ShopOrderStatus {
     NEW,
