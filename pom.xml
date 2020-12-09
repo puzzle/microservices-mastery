@@ -11,6 +11,7 @@
     <module>monolith</module>
     <module>rest/rest-stock</module>
     <module>rest/rest-order</module>
-    <module>kafka/mm-kafka-order</module>
+<!--    <module>kafka/mm-kafka-order</module>-->
+    <module>debezium/debezium-order</module>
   </modules>
 </project>
