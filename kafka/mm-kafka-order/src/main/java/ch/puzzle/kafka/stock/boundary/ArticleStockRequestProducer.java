@@ -21,23 +21,22 @@ public class ArticleStockRequestProducer {
 
     @Inject
     @Channel("article-stock-request")
-    Emitter<ArticleStockRequest> emitter;
+    Emitter<ShopOrderDTO> emitter;
 
     @Inject
     Tracer tracer;
 
     @Traced
     public void createRequest(ShopOrderDTO shopOrderDTO) {
-        ArticleStockRequest articleStockRequest = new ArticleStockRequest(shopOrderDTO);
         HeadersMapExtractAdapter headersMapExtractAdapter = new HeadersMapExtractAdapter();
         try (Scope scope = tracer.buildSpan("sendMessage").startActive(true)) {
             tracer.inject(scope.span().context(), Format.Builtin.TEXT_MAP, headersMapExtractAdapter);
-            OutgoingKafkaRecordMetadata metadata = OutgoingKafkaRecordMetadata.<ArticleStockRequest>builder()
-                    .withKey(articleStockRequest)
+            OutgoingKafkaRecordMetadata metadata = OutgoingKafkaRecordMetadata.<ShopOrderDTO>builder()
+                    .withKey(shopOrderDTO)
                     .withTopic("manual")
                     .withHeaders(headersMapExtractAdapter.getRecordHeaders())
                     .build();
-            Message<ArticleStockRequest> message = Message.of(articleStockRequest, Metadata.of(metadata));
+            Message<ShopOrderDTO> message = Message.of(shopOrderDTO, Metadata.of(metadata));
             emitter.send(message);
         }
     }
