@@ -23,7 +23,7 @@
     </dependencies>
 
     <build>
-        <finalName>event-routers-${version}</finalName>
+        <finalName>event-routers-${project.version}</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>

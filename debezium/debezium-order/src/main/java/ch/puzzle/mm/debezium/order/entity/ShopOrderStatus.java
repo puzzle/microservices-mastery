@@ -2,5 +2,11 @@ package ch.puzzle.mm.debezium.order.entity;
 
 public enum ShopOrderStatus {
     NEW,
-    COMPLETED;
+    COMPLETED,
+    STOCK_INCOMPLETE,
+    CANCELLED;
+
+    public boolean canCancel() {
+        return this == NEW || this == COMPLETED;
+    }
 }

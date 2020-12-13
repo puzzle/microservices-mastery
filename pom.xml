@@ -7,6 +7,7 @@
   <version>0.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Microservice Mastery</name>
+
   <modules>
     <module>monolith</module>
     <module>rest/rest-stock</module>
@@ -14,5 +15,6 @@
     <module>kafka/mm-kafka-order</module>
     <module>debezium/debezium-connect</module>
     <module>debezium/debezium-order</module>
+    <module>debezium/debezium-stock</module>
   </modules>
 </project>

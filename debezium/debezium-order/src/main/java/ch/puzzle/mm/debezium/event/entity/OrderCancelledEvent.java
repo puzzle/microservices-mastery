@@ -1,4 +1,4 @@
-package ch.puzzle.mm.debezium.event;
+package ch.puzzle.mm.debezium.event.entity;
 
 import ch.puzzle.mm.debezium.article.entity.Article;
 import ch.puzzle.mm.debezium.order.entity.ShopOrder;
@@ -11,19 +11,19 @@ import io.debezium.outbox.quarkus.ExportedEvent;
 import java.time.Instant;
 import java.util.UUID;
 
-public class OrderCreatedEvent implements ExportedEvent<String, JsonNode> {
+public class OrderCancelledEvent implements ExportedEvent<String, JsonNode> {
 
     private static ObjectMapper mapper = new ObjectMapper();
 
     private static final String TYPE = "Order";
-    private static final String EVENT_TYPE = "OrderCreated";
+    private static final String EVENT_TYPE = "OrderCancelled";
 
     private final UUID id;
     private final Long orderId;
     private final JsonNode jsonNode;
     private final Instant timestamp;
 
-    public OrderCreatedEvent(Instant created, ShopOrder shopOrder) {
+    public OrderCancelledEvent(Instant created, ShopOrder shopOrder) {
         this.id = UUID.randomUUID();
         this.orderId = shopOrder.id;
         this.timestamp = created;
@@ -63,8 +63,8 @@ public class OrderCreatedEvent implements ExportedEvent<String, JsonNode> {
 
         for (Article article : order.getArticles()) {
             items.add(mapper.createObjectNode()
-                      .put("articleId", article.id)
-                      .put("amount", 1)
+                    .put("articleId", article.id)
+                    .put("amount", 1)
             );
         }
 

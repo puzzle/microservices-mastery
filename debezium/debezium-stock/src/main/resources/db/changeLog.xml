@@ -1,10 +1,7 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
-    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
-    http://www.liquibase.org/xml/ns/dbchangelog
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
     <changeSet author="main" id="1">
@@ -15,6 +12,7 @@
             <column name="name" type="varchar(255)"/>
             <column name="price" type="double"/>
         </createTable>
+
         <createTable tableName="articlestock">
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
@@ -24,6 +22,40 @@
             </column>
             <column name="count" type="int"/>
         </createTable>
+
+        <createTable tableName="outboxevent">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="aggregatetype" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="aggregateid" type="varchar(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestamp" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tracingspancontext" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="payload" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="consumedevent">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="received" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
         <createSequence sequenceName="hibernate_sequence" startValue="100000"/>
 
         <sql>

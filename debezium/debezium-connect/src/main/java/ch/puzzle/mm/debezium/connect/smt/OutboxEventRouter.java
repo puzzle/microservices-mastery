@@ -29,9 +29,7 @@ public class OutboxEventRouter<R extends ConnectRecord<R>> implements Transforma
         String op = struct.getString("op");
 
         // ignoring deletions in the outbox table
-        if (op.equals("d")) {
-            return null;
-        } else if (op.equals("c")) {
+        if (op.equals("c")) {
             Long timestamp = struct.getInt64("ts_ms");
             Struct after = struct.getStruct("after");
 
@@ -40,6 +38,7 @@ public class OutboxEventRouter<R extends ConnectRecord<R>> implements Transforma
 
             String eventId = after.getString("id");
             String eventType = after.getString("type");
+            String tracingSpanContext = after.getString("tracingspancontext");
             String payload = after.getString("payload");
 
             Schema valueSchema = SchemaBuilder.struct()
@@ -55,12 +54,12 @@ public class OutboxEventRouter<R extends ConnectRecord<R>> implements Transforma
 
             Headers headers = record.headers();
             headers.addString("eventId", eventId);
+            headers.addString("eventType", eventType);
+            headers.addString("tracingspancontext", tracingSpanContext);
 
             return record.newRecord(topic, null, Schema.STRING_SCHEMA, key, valueSchema, value, record.timestamp(), headers);
         } else {
-            // not expecting update events, as the outbox table is "append only",
-            // i.e. event records will never be updated
-            logger.warn("Record of unexpected op type '{}'. Record: {}", op, record);
+            // only care for the create event
             return null;
         }
     }

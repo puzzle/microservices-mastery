@@ -6,7 +6,7 @@ services:
     volumes:
       - debezium-order-db-data:/var/lib/postgresql/data/
     networks:
-      kafka:
+      debezium:
         aliases:
           - source-db
     environment:
@@ -15,12 +15,24 @@ services:
     ports:
       - 5432:5432
 
+  order:    
+    image: puzzle/mm-debezium-order:latest    
+    ports:    
+      - 8080:8080    
+    networks:    
+      - debezium
+    depends_on:    
+      - order-db    
+    environment:    
+      - QUARKUS_HTTP_PORT=8080    
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://order-db:5432/admin    
+
   stock-db:
     image: debezium/postgres:11
     volumes:
       - debezium-stock-db-data:/var/lib/postgresql/data/
     networks:
-      kafka:
+      debezium:
         aliases:
           - stock-db
     environment:
@@ -29,10 +41,22 @@ services:
     ports:
       - 5433:5432
 
+  stock:    
+    image: puzzle/mm-debezium-stock:latest    
+    ports:    
+      - 8081:8080    
+    networks:    
+      - debezium
+    depends_on:
+      - stock-db
+    environment:
+      - QUARKUS_HTTP_PORT=8080
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://stock-db:5432/admin
+
   zookeeper:
     image: debezium/zookeeper:1.4
     networks:
-      - kafka
+      - debezium
     ports:
      - 2181:2181
      - 2888:2888
@@ -43,7 +67,7 @@ services:
     ports:
      - 9092:9092
     networks:
-      - kafka
+      - debezium
     links:
      - zookeeper
     environment:
@@ -54,26 +78,41 @@ services:
     ports:
      - 8083:8083
     networks:
-      - kafka
+      - debezium
     links:
      - kafka
      - order-db
      - stock-db
      - zookeeper
+    command: /opt/kafka/kafka_connect_run.sh
     environment:
-     - BOOTSTRAP_SERVERS=kafka:9092
-     - GROUP_ID=connect-debezium
-     - CONFIG_STORAGE_TOPIC=connect-debezium-config
-     - OFFSET_STORAGE_TOPIC=connect-debezium-offsets
-     - CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE=false
-     - ADVERTISED_HOST_NAME=kafka
+     - KAFKA_CONNECT_BOOTSTRAP_SERVERS=kafka:9092
+     - |
+         KAFKA_CONNECT_CONFIGURATION=
+         key.converter=org.apache.kafka.connect.json.JsonConverter
+         value.converter=org.apache.kafka.connect.json.JsonConverter
+         key.converter.schemas.enable=false
+         value.converter.schemas.enable=false
+         group.id=connect-debezium
+         offset.storage.topic=connect-debezium-offsets
+         config.storage.topic=connect-debezium-configs
+         status.storage.topic=connect-debezium-status
+         offset.storage.replication.factor=1
+         config.storage.replication.factor=1
+         status.storage.replication.factor=1
+         consumer.interceptor.classes=io.opentracing.contrib.kafka.TracingConsumerInterceptor
+         producer.interceptor.classes=io.opentracing.contrib.kafka.TracingProducerInterceptor
+     - KAFKA_CONNECT_METRICS_ENABLED=true
+     - STRIMZI_TRACING=jaeger
+     - JAEGER_SERVICE_NAME=debezium-connect
+     - JAEGER_AGENT_HOST=jaeger
 
   grafana:
     image: grafana/grafana:7.3.3
     ports:
       - 3000:3000
     networks:
-      - kafka
+      - debezium
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
@@ -86,7 +125,7 @@ services:
     ports:
       - 9090:9090
     networks:
-      - kafka
+      - debezium
     volumes:
       - ./config/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
       - ./config/prometheus/alert.rules:/etc/prometheus/alert.rules
@@ -96,14 +135,14 @@ services:
     ports:
       - 9093:9093
     networks:
-      - kafka
+      - debezium
     volumes:
       - ./config/alertmanager/alertmanager.yaml:/etc/alertmanager/alertmanager.yml
 
   jaeger:
     image: jaegertracing/all-in-one:1.21.0
     networks:
-      - kafka
+      - debezium
     ports:
       - 5775:5775/udp
       - 6831:6831/udp
@@ -117,7 +156,7 @@ volumes:
   debezium-stock-db-data:
 
 networks:
-  kafka:
+  debezium:
     driver: bridge
     ipam:
       driver: default

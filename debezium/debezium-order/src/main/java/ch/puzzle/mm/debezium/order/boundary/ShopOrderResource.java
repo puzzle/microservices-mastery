@@ -3,6 +3,8 @@ package ch.puzzle.mm.debezium.order.boundary;
 import ch.puzzle.mm.debezium.order.control.ShopOrderService;
 import ch.puzzle.mm.debezium.order.entity.ShopOrder;
 import ch.puzzle.mm.debezium.order.entity.ShopOrderDTO;
+import ch.puzzle.mm.debezium.order.entity.ShopOrderStatus;
+import ch.puzzle.mm.debezium.order.entity.ShopOrderStatusDto;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.slf4j.Logger;
@@ -22,9 +24,7 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ShopOrderResource {
 
-    private final Logger log = LoggerFactory.getLogger(ShopOrderResource.class.getName());
-
-    private static int successfulOrders = 0;
+    private final Logger logger = LoggerFactory.getLogger(ShopOrderResource.class.getName());
 
     @Inject
     ShopOrderService shopOrderService;
@@ -34,18 +34,34 @@ public class ShopOrderResource {
         return shopOrderService.listAll();
     }
 
+    @GET
+    @Path("/{orderId}")
+    public Response get(@PathParam("orderId") long orderId) {
+        return Response.ok(ShopOrder.getByIdOrThrow(orderId)).build();
+    }
+
     @POST
     @Transactional
     @Counted(name = "debezium_order_create_request", absolute = true, description = "number of orders requested", tags = {"application=debezium-order", "resource=ShopOrderResource"})
     @Timed(name = "debezium_order_create_timer", description = "timer for processing a order creation", tags = {"application=debezium-order", "resource=ShopOrderResource"})
-    public Response createShopOrder(ShopOrderDTO shopOrderDTO) {
+    public Response create(ShopOrderDTO shopOrderDTO) {
         ShopOrder shopOrder = shopOrderService.createOrder(shopOrderDTO);
-        registerSuccessfulOrder();
         return Response.ok(shopOrder).build();
     }
 
-    @Counted(name = "rest_order_create_success", absolute = true, description = "number of orders successful", tags = {"application=rest-order", "resource=ShopOrderResource"})
-    public int registerSuccessfulOrder() {
-        return successfulOrders++;
+    @POST
+    @Path("/{orderId}/status")
+    @Transactional
+    @Counted(name = "debezium_order_cancel_request", absolute = true, description = "number of orders cancellations", tags = {"application=debezium-order", "resource=ShopOrderResource"})
+    @Timed(name = "debezium_order_cancel_timer", description = "timer for processing a order cancellation", tags = {"application=debezium-order", "resource=ShopOrderResource"})
+    public Response cancel(@PathParam("orderId") long orderId, ShopOrderStatusDto status) {
+        if (status == null || status.status != ShopOrderStatus.CANCELLED) {
+            throw new IllegalStateException("Failed to change status of order " + orderId);
+        }
+
+        ShopOrder shopOrder = shopOrderService.cancelOrder(orderId);
+        return Response.ok(shopOrder).build();
     }
 }
+
+

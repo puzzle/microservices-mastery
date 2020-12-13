@@ -55,7 +55,19 @@
             <column name="timestamp" type="timestamp">
                 <constraints nullable="false"/>
             </column>
+            <column name="tracingspancontext" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
             <column name="payload" type="text">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="consumedevent">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="received" type="timestamp">
                 <constraints nullable="false"/>
             </column>
         </createTable>

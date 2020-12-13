@@ -3,10 +3,7 @@ package ch.puzzle.mm.debezium.order.entity;
 import ch.puzzle.mm.debezium.article.entity.Article;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
@@ -39,5 +36,14 @@ public class ShopOrder extends PanacheEntity {
 
     public void setStatus(ShopOrderStatus status) {
         this.status = status;
+    }
+
+    public static ShopOrder getByIdOrThrow(long id) throws EntityNotFoundException {
+        ShopOrder order = ShopOrder.findById(id);
+        if (order == null) {
+            throw new EntityNotFoundException();
+        }
+
+        return order;
     }
 }
