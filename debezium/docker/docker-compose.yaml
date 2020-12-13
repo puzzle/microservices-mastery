@@ -107,6 +107,18 @@ services:
      - JAEGER_SERVICE_NAME=debezium-connect
      - JAEGER_AGENT_HOST=jaeger
 
+  viewer:    
+    image: puzzle/mm-debezium-viewer:latest    
+    ports:    
+      - 8082:8080
+    networks:    
+      - debezium
+    depends_on:    
+      - kafka
+      - connect
+    environment:    
+      - QUARKUS_HTTP_PORT=8080    
+
   grafana:
     image: grafana/grafana:7.3.3
     ports:

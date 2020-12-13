@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Message Viewer</title>
+    <style>
+        h1, h2, h3, h4, h5, h6 {
+            margin-bottom: 0.5rem;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .order-ordercreated-events {
+            padding: 5px 10px;
+            background-color: #00A1E2;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .order-ordercancelled-events {
+            padding: 5px 10px;
+            background-color: #ffb700;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .stock-stockcomplete-events {
+            padding: 5px 10px;
+            background-color: #0ea741;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .stock-stockincomplete-events {
+            padding: 5px 10px;
+            background-color: #ff7700;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .payload {
+            padding: 5px 20px;
+            background-color: #e2e2e2;
+            color: #000000;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+        }
+
+        h2 {
+            font-size: 2rem
+        }
+
+        h3 {
+            font-size: 1.75rem
+        }
+
+        h4 {
+            font-size: 1.5rem
+        }
+
+        h5 {
+            font-size: 1.25rem
+        }
+
+        h6 {
+            font-size: 1rem
+        }
+
+        .lead {
+            font-weight: 300;
+            font-size: 2rem;
+        }
+
+        .banner {
+            font-size: 2.7rem;
+            margin: 0;
+            padding: 2rem 1rem;
+            background-color: #00A1E2;
+            color: white;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        }
+
+        code {
+            font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 87.5%;
+            color: #e83e8c;
+            word-break: break-word;
+        }
+
+        #data {
+            padding: 2rem 1rem;
+        }
+
+        .ts {
+            color: #AAAAAA;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+        }
+
+        li {
+            margin: 0.75rem;
+        }
+
+        .right-section {
+            margin-left: 1rem;
+            padding-left: 0.5rem;
+        }
+
+        .right-section h3 {
+            padding-top: 0;
+            font-weight: 200;
+        }
+
+        .right-section ul {
+            border-left: 0.3rem solid #00A1E2;
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="banner lead">
+    Debezium Outbox - Kafka Messages
+</div>
+
+<div class="container">
+    <div id="data" class="row"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<script type="text/javascript">
+    $(window).ready(function () {
+        connect();
+    });
+
+    function connect() {
+        var uuid = randomUUID();
+        socket = new WebSocket("ws://" + location.host + "/stream/" + uuid);
+        socket.onopen = function () {
+            connected = true;
+            console.log("Connected to the web socket");
+        };
+        socket.onmessage = function (m) {
+            $("#data").prepend("<p>" + ts() + " " + m.data + "</p>");
+        };
+    }
+
+    function randomUUID() {
+        var dt = new Date().getTime();
+        var uuid = 'xxxxxxxx-xxxx-xxxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = (dt + Math.random() * 16) % 16 | 0;
+            dt = Math.floor(dt / 16);
+            return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+        return uuid;
+    }
+
+    function ts() {
+        return "<span class=\"ts\">" + new Date() + "</span>"
+    }
+</script>
+
+</body>
+</html>
