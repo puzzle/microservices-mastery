@@ -1,4 +1,4 @@
-# monolith project
+# Viewer project
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
