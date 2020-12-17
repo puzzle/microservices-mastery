@@ -15,23 +15,15 @@
             <column name="name" type="varchar(255)"/>
             <column name="price" type="double"/>
         </createTable>
-
-        <createTable tableName="shoporder">
+        <createTable tableName="articlestock">
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="status" type="varchar(255)"/>
-        </createTable>
-
-        <createTable tableName="shoporder_article">
-            <column name="shoporder_id" type="bigint">
-                <constraints nullable="false" foreignKeyName="shoporder_article_shoporder_fk" referencedColumnNames="id"/>
+            <column name="article_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="articlestock_article_fk" referencedColumnNames="id"/>
             </column>
-            <column name="articles_id" type="bigint">
-                <constraints nullable="false" foreignKeyName="shoporder_article_article_fk" referencedColumnNames="id"/>
-            </column>
+            <column name="count" type="int"/>
         </createTable>
-
         <createSequence sequenceName="hibernate_sequence" startValue="100000"/>
 
         <sql>
@@ -40,11 +32,10 @@
             insert into article (id, name, price) values (3, 'Article 3', 2.99);
             insert into article (id, name, price) values (4, 'Article 4', 122.99);
 
-            insert into shoporder (id, status) values (1, 'NEW');
-
-            insert into shoporder_article (shoporder_id, articles_id) values (1, 1);
-            insert into shoporder_article (shoporder_id, articles_id) values (1, 2);
-            insert into shoporder_article (shoporder_id, articles_id) values (1, 3);
+            insert into articlestock (id, article_id, count) values (1, 1, 10);
+            insert into articlestock (id, article_id, count) values (2, 2, 10);
+            insert into articlestock (id, article_id, count) values (3, 3, 10);
+            insert into articlestock (id, article_id, count) values (4, 4, 10);
         </sql>
     </changeSet>
 </databaseChangeLog>
