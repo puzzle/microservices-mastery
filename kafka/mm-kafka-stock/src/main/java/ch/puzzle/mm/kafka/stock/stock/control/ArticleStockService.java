@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Traced
@@ -20,6 +21,7 @@ public class ArticleStockService {
     @Inject
     ArticleStockRepository articleStockRepository;
 
+    @Transactional
     public void orderArticle(ArticleOrderDTO articleOrderDTO) throws ArticleOutOfStockException {
         ArticleStock articleStock = articleStockRepository.find("article_id", articleOrderDTO.articleId).singleResult();
         if (articleStock.getCount() < articleOrderDTO.amount)

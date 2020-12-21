@@ -6,8 +6,10 @@ import ch.puzzle.mm.kafka.order.util.HeadersMapExtractAdapter;
 import io.opentracing.Scope;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
+import io.opentracing.contrib.kafka.TracingKafkaUtils;
 import io.opentracing.propagation.Format;
 import io.smallrye.reactive.messaging.kafka.IncomingKafkaRecordMetadata;
+import io.smallrye.reactive.messaging.kafka.KafkaRecord;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.eclipse.microprofile.context.ThreadContext;
 import org.eclipse.microprofile.opentracing.Traced;
@@ -20,6 +22,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 @ApplicationScoped
@@ -35,21 +38,16 @@ public class ShopOrderConfirmationConsumer {
     Tracer tracer;
 
     @Incoming("shop-order-confirmation")
-    public CompletionStage<Void> consumeOrders(Message<ShopOrderDTO> message) {
-        Optional<IncomingKafkaRecordMetadata> metadata = message.getMetadata(IncomingKafkaRecordMetadata.class);
-        SpanContext spanContext = tracer.extract(Format.Builtin.TEXT_MAP, new HeadersMapExtractAdapter(metadata.get().getHeaders()));
-        try (Scope scope = tracer.buildSpan("confirm-order").asChildOf(spanContext).startActive(true)) {
-            logger.info("confirmation received");
-            return confirmOrder(message, metadata);
-        }
+    public CompletionStage<Void> consumeOrders(KafkaRecord<String, ShopOrderDTO> message) {
+        return CompletableFuture.runAsync(() -> {
+            try (Scope scope = tracer.buildSpan("confirm-order").asChildOf(TracingKafkaUtils.extractSpanContext(message.getHeaders(), tracer)).startActive(true)) {
+                confirmOrder(message);
+            }
+        }).thenRun(message::ack);
     }
 
-    private CompletionStage<Void> confirmOrder(Message<ShopOrderDTO> message, Optional<IncomingKafkaRecordMetadata> metadata) {
-        ManagedExecutor executor = ManagedExecutor.builder()
-                .maxAsync(5)
-                .propagated(ThreadContext.CDI, ThreadContext.TRANSACTION)
-                .build();
-        executor.runAsync(() -> shopOrderService.confirmOrder(message.getPayload().id));
-        return message.ack();
+    private void confirmOrder(KafkaRecord<String, ShopOrderDTO> message) {
+        shopOrderService.confirmOrder(message.getPayload().id);
     }
 }
+
