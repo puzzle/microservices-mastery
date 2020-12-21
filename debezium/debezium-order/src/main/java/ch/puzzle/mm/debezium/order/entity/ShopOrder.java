@@ -1,6 +1,5 @@
 package ch.puzzle.mm.debezium.order.entity;
 
-import ch.puzzle.mm.debezium.article.entity.Article;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
 import javax.persistence.*;
@@ -8,8 +7,8 @@ import java.util.List;
 
 @Entity
 public class ShopOrder extends PanacheEntity {
-    @OneToMany
-    private List<Article> articles;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ArticleOrder> articleOrders;
 
     @Enumerated(EnumType.STRING)
     private ShopOrderStatus status;
@@ -17,17 +16,17 @@ public class ShopOrder extends PanacheEntity {
     public ShopOrder() {
     }
 
-    public ShopOrder(List<Article> articles, ShopOrderStatus status) {
-        this.articles = articles;
+    public ShopOrder(List<ArticleOrder> articles, ShopOrderStatus status) {
+        this.articleOrders = articles;
         this.status = status;
     }
 
-    public List<Article> getArticles() {
-        return articles;
+    public List<ArticleOrder> getArticleOrders() {
+        return articleOrders;
     }
 
-    public void setArticles(List<Article> articles) {
-        this.articles = articles;
+    public void setArticleOrders(List<ArticleOrder> articleOrders) {
+        this.articleOrders = articleOrders;
     }
 
     public ShopOrderStatus getStatus() {

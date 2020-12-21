@@ -19,11 +19,13 @@ services:
     image: puzzle/mm-debezium-order:latest    
     ports:    
       - 8080:8080    
+      - 5005:5005
     networks:    
       - debezium
     depends_on:    
       - order-db    
     environment:    
+      - JAVA_ENABLE_DEBUG=true
       - QUARKUS_HTTP_PORT=8080    
       - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://order-db:5432/admin    
 

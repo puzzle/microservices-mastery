@@ -3,6 +3,8 @@ package ch.puzzle.mm.debezium.event.control;
 import ch.puzzle.mm.debezium.stock.control.ArticleStockService;
 import ch.puzzle.mm.debezium.stock.entity.Order;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +27,8 @@ public class OrderEventHandler {
     @Inject
     ArticleStockService articleStockService;
 
+    @Counted(name = "debezium_stock_orderevent_total", absolute = true, description = "number of events from order", tags = {"application=debezium-stock", "resource=OrderEventHandler"})
+    @Timed(name = "debezium_stock_orderevent_timed", description = "timer for processing an order event", tags = {"application=debezium-stock", "resource=OrderEventHandler"})
     @Transactional
     public void onOrderEvent(UUID eventId, String eventType, String key, String event, Instant ts) {
         if (eventLog.alreadyProcessed(eventId)) {

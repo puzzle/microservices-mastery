@@ -1,6 +1,6 @@
 package ch.puzzle.mm.debezium.event.entity;
 
-import ch.puzzle.mm.debezium.article.entity.Article;
+import ch.puzzle.mm.debezium.order.entity.ArticleOrder;
 import ch.puzzle.mm.debezium.order.entity.ShopOrder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,10 +61,10 @@ public class OrderCreatedEvent implements ExportedEvent<String, JsonNode> {
 
         ArrayNode items = asJson.putArray("items");
 
-        for (Article article : order.getArticles()) {
+        for (ArticleOrder article : order.getArticleOrders()) {
             items.add(mapper.createObjectNode()
-                    .put("articleId", article.id)
-                    .put("amount", 1)
+                    .put("articleId", article.getArticleId())
+                    .put("amount", article.getAmount())
             );
         }
 

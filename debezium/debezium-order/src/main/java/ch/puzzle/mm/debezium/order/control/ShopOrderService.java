@@ -1,13 +1,10 @@
 package ch.puzzle.mm.debezium.order.control;
 
-import ch.puzzle.mm.debezium.article.entity.Article;
 import ch.puzzle.mm.debezium.event.entity.OrderCancelledEvent;
 import ch.puzzle.mm.debezium.event.entity.OrderCreatedEvent;
-import ch.puzzle.mm.debezium.order.entity.ShopOrder;
-import ch.puzzle.mm.debezium.order.entity.ShopOrderDTO;
-import ch.puzzle.mm.debezium.order.entity.ShopOrderStatus;
-import ch.puzzle.mm.debezium.order.entity.ShopOrderStockResponse;
+import ch.puzzle.mm.debezium.order.entity.*;
 import io.debezium.outbox.quarkus.ExportedEvent;
+import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.opentracing.Traced;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -17,6 +14,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Traced
 @ApplicationScoped
 public class ShopOrderService {
 
@@ -27,15 +25,13 @@ public class ShopOrderService {
     @Inject
     Event<ExportedEvent<?, ?>> event;
 
-    @Traced
     public ShopOrder createOrder(ShopOrderDTO shopOrderDTO) {
-        List<Long> ids = shopOrderDTO.articleOrders.stream().map(s -> s.articleId).collect(Collectors.toList());
-        List<Article> articles = Article.list("id in ?1", ids);
+        List<ArticleOrder> articleOrders = shopOrderDTO.articleOrders.stream().map(s -> new ArticleOrder(s.articleId, s.amount)).collect(Collectors.toList());
 
         // store order to shopOrder table
         ShopOrder shopOrder = new ShopOrder();
         shopOrder.setStatus(ShopOrderStatus.NEW);
-        shopOrder.setArticles(articles);
+        shopOrder.setArticleOrders(articleOrders);
         shopOrder.persist();
 
         // fire event (outbox table)
@@ -44,21 +40,20 @@ public class ShopOrderService {
         return shopOrder;
     }
 
-    @Traced
+    @Counted(name = "debezium_order_stockevent_complete", absolute = true, description = "number of stockcomplete events from stock", tags = {"application=debezium-order", "resource=ShopOrderService"})
     public void onStockCompleteEvent(ShopOrderStockResponse stockComplete) {
         ShopOrder.findByIdOptional(stockComplete.orderId).ifPresent(o -> {
             ((ShopOrder) o).setStatus(ShopOrderStatus.COMPLETED);
         });
     }
 
-    @Traced
+    @Counted(name = "debezium_order_stockevent_incomplete", absolute = true, description = "number of stockincomplete events from stock", tags = {"application=debezium-order", "resource=ShopOrderService"})
     public void onStockIncompleteEvent(ShopOrderStockResponse stockIncomplete) {
         ShopOrder.findByIdOptional(stockIncomplete.orderId).ifPresent(o -> {
             ((ShopOrder) o).setStatus(ShopOrderStatus.STOCK_INCOMPLETE);
         });
     }
 
-    @Traced
     public ShopOrder cancelOrder(long orderId) {
         ShopOrder order = ShopOrder.getByIdOrThrow(orderId);
         if (order.getStatus().canCancel()) {

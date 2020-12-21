@@ -6,6 +6,7 @@ import ch.puzzle.mm.debezium.stock.entity.ArticleStock;
 import ch.puzzle.mm.debezium.stock.entity.Order;
 import ch.puzzle.mm.debezium.stock.entity.OrderArticle;
 import io.debezium.outbox.quarkus.ExportedEvent;
+import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +26,7 @@ public class ArticleStockService {
     @Inject
     Event<ExportedEvent<?, ?>> event;
 
+    @Counted(name = "debezium_stock_orderevent_create", absolute = true, description = "number of ordercreate events from order", tags = {"application=debezium-stock", "resource=ArticleStockService"})
     public void orderCreated(Order order) {
         logger.info("Processing 'OrderCreated' event: {}", order.orderId);
 
@@ -45,6 +47,16 @@ public class ArticleStockService {
         }
     }
 
+    @Counted(name = "debezium_stock_orderevent_cancel", absolute = true, description = "number of ordercancel events from order", tags = {"application=debezium-stock", "resource=ArticleStockService"})
+    public void orderCanceled(Order order) {
+        logger.info("Processing 'OrderCancelled' event: {}", order.orderId);
+
+        order.items.forEach(item -> {
+            ArticleStock as = ArticleStock.findByArticleId(item.articleId);
+            as.setCount(as.getCount() + item.getAmount());
+        });
+    }
+
     boolean isStockComplete(Map<Long, ArticleStock> stock, List<OrderArticle> items) {
         for (OrderArticle item : items) {
             if (!stock.containsKey(item.articleId) || stock.get(item.articleId).getCount() < item.getAmount()) {
@@ -53,14 +65,5 @@ public class ArticleStockService {
         }
 
         return true;
-    }
-
-    public void orderCanceled(Order order) {
-        logger.info("Processing 'OrderCancelled' event: {}", order.orderId);
-
-        order.items.forEach(item -> {
-            ArticleStock as = ArticleStock.findByArticleId(item.articleId);
-            as.setCount(as.getCount() + item.getAmount());
-        });
     }
 }

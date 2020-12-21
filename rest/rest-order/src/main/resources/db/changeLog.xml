@@ -8,14 +8,6 @@
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
     <changeSet author="main" id="1">
-        <createTable tableName="article">
-            <column name="id" type="bigint">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="name" type="varchar(255)"/>
-            <column name="price" type="double"/>
-        </createTable>
-
         <createTable tableName="shoporder">
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
@@ -23,12 +15,20 @@
             <column name="status" type="varchar(255)"/>
         </createTable>
 
-        <createTable tableName="shoporder_article">
+        <createTable tableName="articleorder">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="articleid" type="bigint"/>
+            <column name="amount" type="number"/>
+        </createTable>
+
+        <createTable tableName="shoporder_articleorder">
             <column name="shoporder_id" type="bigint">
                 <constraints nullable="false" foreignKeyName="shoporder_article_shoporder_fk" referencedColumnNames="id"/>
             </column>
-            <column name="articles_id" type="bigint">
-                <constraints nullable="false" foreignKeyName="shoporder_article_article_fk" referencedColumnNames="id"/>
+            <column name="articleorders_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="shoporder_article_articleorder_fk" referencedColumnNames="id"/>
             </column>
         </createTable>
 
