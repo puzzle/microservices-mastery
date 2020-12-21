@@ -14,6 +14,7 @@
     <module>rest/rest-order</module>
     <module>kafka/mm-kafka-order</module>
     <module>kafka/mm-kafka-stock</module>
+    <module>kafka/kafka-viewer</module>
     <module>debezium/debezium-connect</module>
     <module>debezium/debezium-order</module>
     <module>debezium/debezium-stock</module>

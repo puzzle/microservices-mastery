@@ -18,8 +18,8 @@ services:
       context: ../mm-kafka-order/.
       dockerfile: ./src/main/docker/Dockerfile.multistage.jvm
     ports:
-      - 5005:5005
       - 8080:8080
+      - 5005:5005
     networks:
       - kafka
     depends_on:
@@ -136,6 +136,17 @@ services:
       - 5778:5778
       - 14268:14268
       - 16686:16686
+
+  viewer:
+    image: puzzle/mm-kafka-viewer:latest
+    ports:
+      - 8082:8080
+    networks:
+      - kafka
+    depends_on:
+      - kafka
+    environment:
+      - QUARKUS_HTTP_PORT=8080
 
 volumes:
   order-db-data:

@@ -62,13 +62,11 @@ public class ShopOrderRequestConsumer {
     }
 
     @Counted(name = "kafka_stock_order_compensated", absolute = true)
-    @Outgoing("shop-order-compensation")
     private void compensateOrder(ShopOrderDTO shopOrderDTO) {
         articleStockCompensationEmitter.send(shopOrderDTO);
     }
 
     @Counted(name = "kafka_stock_order_confirmed", absolute = true)
-    @Outgoing("shop-order-confirmation")
     private void confirmShopOrder(ShopOrderDTO shopOrderDTO) {
         articleStockConfirmationEmitter.send(shopOrderDTO);
     }
