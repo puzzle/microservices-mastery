@@ -1,8 +1,26 @@
 version: '3'
 
 services:
+  lra-coordinator:
+    image: jbosstm/lra-coordinator:5.10.6.Final
+    hostname: lra-coordinator
+    volumes:
+      - lra-data:/opt/jboss
+    container_name: rest-lra-coordinator
+    networks:
+      rest:
+        aliases:
+          - lra-coordinator
+    environment:
+      - AB_JOLOKIA_OFF="true"
+      - THORNTAIL_LOGGING_ROOT-LOGGER.LEVEL=DEBUG
+    ports:
+      - 8090:8080
+
   order-db:
     image: postgres:11.9
+    hostname: order-db
+    container_name: rest-order-db
     volumes:
       - order-db-data:/var/lib/postgresql/data/
     networks:
@@ -17,6 +35,8 @@ services:
 
   order:
     image: puzzle/mm-rest-order:latest
+    hostname: order
+    container_name: rest-order
     ports:
       - 8080:8080
     networks:
@@ -27,9 +47,14 @@ services:
       - QUARKUS_HTTP_PORT=8080
       - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://order-db:5432/admin
       - APPLICATION_ARTICLESTOCK_API_URL=http://stock:8080/
+      - APPLICATION_REWRITE_BASE_ENABLED=true
+      - APPLICATION_REWRITE_BASE_HOST=order
+      - JAVA_TOOL_OPTIONS=-Dlra.http.host=lra-coordinator -Dlra.http.port=8080
 
   stock-db:
     image: postgres:11.9
+    hostname: stock-db
+    container_name: rest-stock-db
     volumes:
       - stock-db-data:/var/lib/postgresql/data/
     networks:
@@ -44,6 +69,8 @@ services:
 
   stock:
     image: puzzle/mm-rest-stock:latest
+    hostname: stock
+    container_name: rest-stock
     ports:
       - 8081:8080
     networks:
@@ -56,6 +83,7 @@ services:
 
   grafana:
     image: grafana/grafana:7.3.3
+    container_name: rest-grafana
     ports:
       - 3000:3000
     networks:
@@ -69,6 +97,7 @@ services:
 
   prometheus:
     image: prom/prometheus:v2.22.2
+    container_name: rest-prometheus
     ports:
       - 9090:9090
     networks:
@@ -79,6 +108,7 @@ services:
 
   alertmanager:
     image: prom/alertmanager:v0.21.0
+    container_name: rest-alertmanager
     ports:
       - 9093:9093
     networks:
@@ -88,6 +118,7 @@ services:
 
   jaeger:
     image: jaegertracing/all-in-one:1.21.0
+    container_name: rest-jaeger
     networks:
       - rest
     ports:
@@ -101,6 +132,7 @@ services:
 volumes:
   order-db-data:
   stock-db-data:
+  lra-data:
 
 networks:
   rest:

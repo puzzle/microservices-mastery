@@ -3,21 +3,28 @@ package ch.puzzle.mm.rest.stock.entity;
 import ch.puzzle.mm.rest.article.entity.Article;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import java.util.List;
 
 @Entity
-public class ArticleStock extends PanacheEntity {
+public class ArticleStockChange extends PanacheEntity {
     @ManyToOne(targetEntity = Article.class)
     private Article article;
+
+    @Column(nullable = false)
+    private String lra;
+
     private int count;
 
-    public ArticleStock(Article article, int count) {
+    public ArticleStockChange(Article article, int count, String lraId) {
         this.article = article;
         this.count = count;
+        this.lra = lraId;
     }
 
-    public ArticleStock() {
+    public ArticleStockChange() {
     }
 
     public Article getArticle() {
@@ -36,7 +43,15 @@ public class ArticleStock extends PanacheEntity {
         this.count = count;
     }
 
-    public static ArticleStock findByArticleId(long articleId) {
-        return find("article_id", articleId).singleResult();
+    public String getLra() {
+        return lra;
+    }
+
+    public void setLra(String lraId) {
+        this.lra = lraId;
+    }
+
+    public static List<ArticleStockChange> findByLraId(String lraId) {
+        return list("lra", lraId);
     }
 }

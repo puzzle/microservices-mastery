@@ -1,9 +1,12 @@
 package ch.puzzle.mm.rest.order.entity;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.panache.common.Parameters;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class ShopOrder extends PanacheEntity {
@@ -12,6 +15,10 @@ public class ShopOrder extends PanacheEntity {
 
     @Enumerated(EnumType.STRING)
     private ShopOrderStatus status;
+
+    @NotNull
+    @Column(unique=true, nullable = false)
+    private String lra;
 
     public ShopOrder() {
     }
@@ -35,5 +42,22 @@ public class ShopOrder extends PanacheEntity {
 
     public void setStatus(ShopOrderStatus status) {
         this.status = status;
+    }
+
+    public String getLra() {
+        return lra;
+    }
+
+    public void setLra(String lraId) {
+        this.lra = lraId;
+    }
+
+    public static Optional<ShopOrder> findByLraId(String lraId) {
+        return find("lra", lraId).singleResultOptional();
+    }
+
+    public static int setStatusByLra(ShopOrderStatus status, String lra) {
+        return update("status = :status where lra = :lra",
+                Parameters.with("status", status).and("lra", lra));
     }
 }

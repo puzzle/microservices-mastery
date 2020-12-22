@@ -1,4 +1,4 @@
-package ch.puzzle.mm.rest.io;
+package ch.puzzle.mm.rest.util;
 
 import io.opentracing.Tracer;
 import io.restassured.path.json.JsonPath;
@@ -28,7 +28,10 @@ public class ErrorResponseTracingFilter implements ContainerResponseFilter {
 
             String message = null;
             try {
-                message = JsonPath.from(responseContext.getEntity().toString()).get("message");
+                Object entity = responseContext.getEntity();
+                if(entity != null) {
+                    message = JsonPath.from(entity.toString()).get("message");
+                }
             } catch (ClassCastException e) {
                 message = "ResponseStatus: " + responseContext.getStatusInfo().getReasonPhrase();
             }

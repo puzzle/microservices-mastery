@@ -15,6 +15,7 @@
             <column name="name" type="varchar(255)"/>
             <column name="price" type="double"/>
         </createTable>
+
         <createTable tableName="articlestock">
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
@@ -24,6 +25,18 @@
             </column>
             <column name="count" type="int"/>
         </createTable>
+
+        <createTable tableName="articlestockchange">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="article_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="articlestockchange_article_fk" referencedColumnNames="id"/>
+            </column>
+            <column name="count" type="int"/>
+            <column name="lra" type="varchar(255)"/>
+        </createTable>
+
         <createSequence sequenceName="hibernate_sequence" startValue="100000"/>
 
         <sql>

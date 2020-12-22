@@ -11,10 +11,7 @@ import java.util.List;
 @Traced
 public class ArticleService {
 
-    @Inject
-    ArticleRepository articleRepository;
-
     public List<Article> listAll() {
-        return articleRepository.listAll();
+        return Article.findAll().list();
     }
 }
