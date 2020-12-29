@@ -1,50 +1,22 @@
 version: '3'
 
 services:
-  order-db:
-    image: debezium/postgres:11
-    volumes:
-      - debezium-order-db-data:/var/lib/postgresql/data/
-    networks:
-      debezium:
-        aliases:
-          - source-db
-    environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=1234
-    ports:
-      - 5432:5432
-
   order:    
-    image: puzzle/mm-debezium-order:latest    
+    image: quay.io/puzzle/microservices-lab-debezium-order:latest
     ports:    
       - 8080:8080    
-      - 5005:5005
-    networks:    
+    networks:
       - debezium
     depends_on:    
       - order-db    
     environment:    
-      - JAVA_ENABLE_DEBUG=true
       - QUARKUS_HTTP_PORT=8080    
       - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://order-db:5432/admin    
 
-  stock-db:
-    image: debezium/postgres:11
-    volumes:
-      - debezium-stock-db-data:/var/lib/postgresql/data/
-    networks:
-      debezium:
-        aliases:
-          - stock-db
-    environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=1234
-    ports:
-      - 5433:5432
-
   stock:    
-    image: puzzle/mm-debezium-stock:latest    
+    image: quay.io/puzzle/microservices-lab-debezium-stock:latest
+    hostname: stock
+    container_name: debezium-stock
     ports:    
       - 8081:8080    
     networks:    
@@ -55,33 +27,15 @@ services:
       - QUARKUS_HTTP_PORT=8080
       - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://stock-db:5432/admin
 
-  zookeeper:
-    image: debezium/zookeeper:1.4
-    networks:
-      - debezium
-    ports:
-     - 2181:2181
-     - 2888:2888
-     - 3888:3888
-
-  kafka:
-    image: debezium/kafka:1.4
-    ports:
-     - 9092:9092
-    networks:
-      - debezium
-    links:
-     - zookeeper
-    environment:
-     - ZOOKEEPER_CONNECT=zookeeper:2181
-
   connect:
-    image: puzzle/mm-debezium-connect:latest
+    image: quay.io/puzzle/microservices-lab-debezium-connect:latest
+    hostname: connect
+    container_name: debezium-connect
     ports:
      - 8083:8083
     networks:
       - debezium
-    links:
+    depends_on:
      - kafka
      - order-db
      - stock-db
@@ -105,12 +59,42 @@ services:
          consumer.interceptor.classes=io.opentracing.contrib.kafka.TracingConsumerInterceptor
          producer.interceptor.classes=io.opentracing.contrib.kafka.TracingProducerInterceptor
      - KAFKA_CONNECT_METRICS_ENABLED=true
-     - STRIMZI_TRACING=jaeger
      - JAEGER_SERVICE_NAME=debezium-connect
      - JAEGER_AGENT_HOST=jaeger
+     - STRIMZI_TRACING=jaeger
+
+  order-db:
+    image: quay.io/debezium/postgres:11
+    hostname: order-db
+    container_name: debezium-order-db
+    volumes:
+      - debezium-order-db-data:/var/lib/postgresql/data/
+    networks:
+      - debezium
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=1234
+    ports:
+      - 5432:5432
+
+  stock-db:
+    image: quay.io/debezium/postgres:11
+    hostname: stock-db
+    container_name: debezium-stock-db
+    volumes:
+      - debezium-stock-db-data:/var/lib/postgresql/data/
+    networks:
+      - debezium
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=1234
+    ports:
+      - 5433:5432
 
   viewer:    
-    image: puzzle/mm-debezium-viewer:latest    
+    image: quay.io/puzzle/microservices-lab-debezium-viewer:latest
+    hostname: viewer
+    container_name: debezium-viewer
     ports:    
       - 8082:8080
     networks:    
@@ -121,8 +105,34 @@ services:
     environment:    
       - QUARKUS_HTTP_PORT=8080    
 
+  zookeeper:
+    image: quay.io/debezium/zookeeper:1.4
+    hostname: zookeeper
+    container_name: debezium-zookeeper
+    networks:
+      - debezium
+    ports:
+     - 2181:2181
+     - 2888:2888
+     - 3888:3888
+
+  kafka:
+    image: quay.io/debezium/kafka:1.4
+    hostname: kafka
+    container_name: debezium-kafka
+    ports:
+     - 9092:9092
+    networks:
+      - debezium
+    depends_on:
+     - zookeeper
+    environment:
+     - ZOOKEEPER_CONNECT=zookeeper:2181
+
   grafana:
-    image: grafana/grafana:7.3.3
+    image: docker.io/grafana/grafana:7.3.6
+    hostname: grafana
+    container_name: debezium-grafana
     ports:
       - 3000:3000
     networks:
@@ -135,7 +145,9 @@ services:
       - ./config/grafana/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
 
   prometheus:
-    image: prom/prometheus:v2.22.2
+    image: quay.io/prometheus/prometheus:v2.22.2
+    hostname: prometheus
+    container_name: debezium-prometheus
     ports:
       - 9090:9090
     networks:
@@ -145,7 +157,9 @@ services:
       - ./config/prometheus/alert.rules:/etc/prometheus/alert.rules
 
   alertmanager:
-    image: prom/alertmanager:v0.21.0
+    image: quay.io/prometheus/alertmanager:v0.21.0
+    hostname: alertmanager
+    container_name: debezium-alertmanager
     ports:
       - 9093:9093
     networks:
@@ -154,7 +168,9 @@ services:
       - ./config/alertmanager/alertmanager.yaml:/etc/alertmanager/alertmanager.yml
 
   jaeger:
-    image: jaegertracing/all-in-one:1.21.0
+    image: quay.io/jaegertracing/all-in-one:1.21.0
+    hostname: jaeger
+    container_name: debezium-jaeger
     networks:
       - debezium
     ports:
