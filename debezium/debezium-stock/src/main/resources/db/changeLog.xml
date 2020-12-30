@@ -43,7 +43,7 @@
                 <constraints nullable="true"/>
             </column>
             <column name="payload" type="text">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
         </createTable>
 

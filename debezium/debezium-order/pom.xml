@@ -15,9 +15,9 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
-        <quarkus-plugin.version>1.10.3.Final</quarkus-plugin.version>
-        <quarkus.platform.version>1.10.3.Final</quarkus.platform.version>
-        <debezium.version>1.4.0.Beta1</debezium.version>
+        <quarkus-plugin.version>1.10.5.Final</quarkus-plugin.version>
+        <quarkus.platform.version>1.10.5.Final</quarkus.platform.version>
+        <debezium.version>1.4.0.CR1</debezium.version>
         <surefire-plugin.version>2.22.0</surefire-plugin.version>
     </properties>
 
@@ -70,10 +70,6 @@
         </dependency>
 
         <!-- Tracing, Metrics and Health dependencies -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-smallrye-health</artifactId>
-        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-metrics</artifactId>

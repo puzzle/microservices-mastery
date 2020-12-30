@@ -3,6 +3,8 @@ version: '3'
 services:
   order:    
     image: quay.io/puzzle/microservices-lab-debezium-order:latest
+    hostname: order
+    container_name: debezium-order
     ports:    
       - 8080:8080    
     networks:

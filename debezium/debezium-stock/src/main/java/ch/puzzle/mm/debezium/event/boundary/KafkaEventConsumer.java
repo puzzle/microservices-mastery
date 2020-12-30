@@ -30,7 +30,6 @@ public class KafkaEventConsumer {
     @Inject
     Tracer tracer;
 
-    @Merge
     @Incoming("order")
     public CompletionStage<Void> onMessage(KafkaRecord<String, String> message) {
         return CompletableFuture.runAsync(() -> {
