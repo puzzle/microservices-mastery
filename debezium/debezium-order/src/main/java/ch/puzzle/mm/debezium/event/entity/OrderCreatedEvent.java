@@ -15,7 +15,7 @@ public class OrderCreatedEvent implements ExportedEvent<String, JsonNode> {
 
     private static ObjectMapper mapper = new ObjectMapper();
 
-    private static final String TYPE = "Order";
+    private static final String AGGREGATE_TYPE = "Order";
     private static final String EVENT_TYPE = "OrderCreated";
 
     private final UUID id;
@@ -37,7 +37,7 @@ public class OrderCreatedEvent implements ExportedEvent<String, JsonNode> {
 
     @Override
     public String getAggregateType() {
-        return TYPE;
+        return AGGREGATE_TYPE;
     }
 
     @Override
