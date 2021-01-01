@@ -26,5 +26,4 @@ public class EventLog {
         logger.info("Looking for event with id {} in message log", eventId);
         return ConsumedEvent.findByIdOptional(eventId).isPresent();
     }
-
 }
