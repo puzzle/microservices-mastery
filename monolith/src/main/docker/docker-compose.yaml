@@ -1,22 +1,10 @@
 version: '3'
 
 services:
-  monolith-db:
-    image: postgres:11.9
-    volumes:
-      - db-data:/var/lib/postgresql/data/
-    networks:
-      monolith:
-        aliases:
-          - monolith-db
-    environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=1234
-    ports:
-      - 5432:5432
-
   monolith:
-    image: puzzle/mm-monolith:latest
+    image: quay.io/puzzle/microservices-lab-monolith:latest
+    hostname: monolith
+    container_name: monolith-monolith
     ports:
       - 8080:8080
     networks:
@@ -25,10 +13,26 @@ services:
       - monolith-db
     environment:
       - QUARKUS_HTTP_PORT=8080
-      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://monolith-db:5432/admin
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:tracing:postgresql://monolith-db:5432/admin
+
+  monolith-db:
+    image: docker.io/postgres:11.9
+    hostname: monolith-db
+    container_name: monolith-monolith-db
+    volumes:
+      - db-data:/var/lib/postgresql/data/
+    networks:
+      - monolith
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=1234
+    ports:
+      - 5432:5432
 
   grafana:
-    image: grafana/grafana:7.3.3
+    image: docker.io/grafana/grafana:7.3.3
+    hostname: grafana
+    container_name: monolith-grafana
     ports:
       - 3000:3000
     networks:
@@ -41,7 +45,9 @@ services:
       - ./config/grafana/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
 
   prometheus:
-    image: prom/prometheus:v2.22.2
+    image: quay.io/prometheus/prometheus:v2.22.2
+    hostname: prometheus
+    container_name: monolith-prometheus
     ports:
       - 9090:9090
     networks:
@@ -51,7 +57,9 @@ services:
       - ./config/prometheus/alert.rules:/etc/prometheus/alert.rules
 
   alertmanager:
-    image: prom/alertmanager:v0.21.0
+    image: quay.io/prometheus/alertmanager:v0.21.0
+    hostname: alertmanager
+    container_name: monolith-alertmanager
     ports:
       - 9093:9093
     networks:
@@ -60,7 +68,9 @@ services:
       - ./config/alertmanager/alertmanager.yaml:/etc/alertmanager/alertmanager.yml
 
   jaeger:
-    image: jaegertracing/all-in-one:1.21.0
+    image: quay.io/jaegertracing/all-in-one:1.21.0
+    hostname: jaeger
+    container_name: monolith-jaeger
     networks:
       - monolith
     ports:

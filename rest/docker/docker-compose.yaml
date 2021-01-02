@@ -2,39 +2,21 @@ version: '3'
 
 services:
   lra-coordinator:
-    image: jbosstm/lra-coordinator:5.10.6.Final
+    image: docker.io/jbosstm/lra-coordinator:5.10.6.Final
     hostname: lra-coordinator
+    container_name: rest-lra-coordinator
     volumes:
       - lra-data:/opt/jboss
-    container_name: rest-lra-coordinator
     networks:
-      rest:
-        aliases:
-          - lra-coordinator
+      - rest
     environment:
       - AB_JOLOKIA_OFF="true"
       - THORNTAIL_LOGGING_ROOT-LOGGER.LEVEL=DEBUG
     ports:
       - 8090:8080
 
-  order-db:
-    image: postgres:11.9
-    hostname: order-db
-    container_name: rest-order-db
-    volumes:
-      - order-db-data:/var/lib/postgresql/data/
-    networks:
-      rest:
-        aliases:
-          - order-db
-    environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=1234
-    ports:
-      - 5432:5432
-
   order:
-    image: puzzle/mm-rest-order:latest
+    image: quay.io/puzzle/microservices-lab-rest-order:latest
     hostname: order
     container_name: rest-order
     ports:
@@ -45,30 +27,14 @@ services:
       - order-db
     environment:
       - QUARKUS_HTTP_PORT=8080
-      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://order-db:5432/admin
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:tracing:postgresql://order-db:5432/admin
       - APPLICATION_ARTICLESTOCK_API_URL=http://stock:8080/
       - APPLICATION_REWRITE_BASE_ENABLED=true
       - APPLICATION_REWRITE_BASE_HOST=order
       - JAVA_TOOL_OPTIONS=-Dlra.http.host=lra-coordinator -Dlra.http.port=8080
 
-  stock-db:
-    image: postgres:11.9
-    hostname: stock-db
-    container_name: rest-stock-db
-    volumes:
-      - stock-db-data:/var/lib/postgresql/data/
-    networks:
-      rest:
-        aliases:
-          - stock-db
-    environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=1234
-    ports:
-      - 5433:5432
-
   stock:
-    image: puzzle/mm-rest-stock:latest
+    image: quay.io/puzzle/microservices-lab-rest-stock:latest
     hostname: stock
     container_name: rest-stock
     ports:
@@ -79,10 +45,39 @@ services:
       - stock-db
     environment:
       - QUARKUS_HTTP_PORT=8080
-      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://stock-db:5432/admin
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:tracing:postgresql://stock-db:5432/admin
+
+  order-db:
+    image: docker.io/postgres:11.9
+    hostname: order-db
+    container_name: rest-order-db
+    volumes:
+      - order-db-data:/var/lib/postgresql/data/
+    networks:
+      - rest
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=1234
+    ports:
+      - 5432:5432
+
+  stock-db:
+    image: docker.io/postgres:11.9
+    hostname: stock-db
+    container_name: rest-stock-db
+    volumes:
+      - stock-db-data:/var/lib/postgresql/data/
+    networks:
+      - rest
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=1234
+    ports:
+      - 5433:5432
 
   grafana:
-    image: grafana/grafana:7.3.3
+    image: docker.io/grafana/grafana:7.3.3
+    hostname: grafana
     container_name: rest-grafana
     ports:
       - 3000:3000
@@ -96,7 +91,8 @@ services:
       - ./config/grafana/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
 
   prometheus:
-    image: prom/prometheus:v2.22.2
+    image: quay.io/prometheus/prometheus:v2.22.2
+    hostname: prometheus
     container_name: rest-prometheus
     ports:
       - 9090:9090
@@ -107,7 +103,8 @@ services:
       - ./config/prometheus/alert.rules:/etc/prometheus/alert.rules
 
   alertmanager:
-    image: prom/alertmanager:v0.21.0
+    image: quay.io/prometheus/alertmanager:v0.21.0
+    hostname: alertmanager
     container_name: rest-alertmanager
     ports:
       - 9093:9093
@@ -117,7 +114,8 @@ services:
       - ./config/alertmanager/alertmanager.yaml:/etc/alertmanager/alertmanager.yml
 
   jaeger:
-    image: jaegertracing/all-in-one:1.21.0
+    image: quay.io/jaegertracing/all-in-one:1.21.0
+    hostname: jaeger
     container_name: rest-jaeger
     networks:
       - rest

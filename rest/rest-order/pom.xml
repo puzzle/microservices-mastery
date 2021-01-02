@@ -6,6 +6,7 @@
   <groupId>ch.puzzle</groupId>
   <artifactId>rest-order</artifactId>
   <version>1.0-SNAPSHOT</version>
+
   <properties>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <maven.compiler.parameters>true</maven.compiler.parameters>
@@ -15,12 +16,13 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
-    <quarkus-plugin.version>1.9.2.Final</quarkus-plugin.version>
-    <quarkus.platform.version>1.9.2.Final</quarkus.platform.version>
-    <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
+    <quarkus-plugin.version>1.10.5.Final</quarkus-plugin.version>
+    <quarkus.platform.version>1.10.5.Final</quarkus.platform.version>
+    <surefire-plugin.version>2.22.0</surefire-plugin.version>
     <guava.version>30.0-jre</guava.version>
     <narayana-lra.version>5.10.6.Final</narayana-lra.version>
   </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -32,6 +34,7 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -39,7 +42,7 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-health</artifactId>
+      <artifactId>quarkus-resteasy-jsonb</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -47,42 +50,45 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy-jsonb</artifactId>
+      <artifactId>quarkus-smallrye-openapi</artifactId>
     </dependency>
-    <!--        <dependency>-->
-    <!--            <groupId>io.quarkus</groupId>-->
-    <!--            <artifactId>quarkus-resteasy-jsonb-deployment</artifactId>-->
-    <!--        </dependency>-->
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-metrics</artifactId>
+      <artifactId>quarkus-smallrye-fault-tolerance</artifactId>
     </dependency>
+
+    <!-- Database specific dependencies -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-hibernate-orm-panache</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-openapi</artifactId>
+      <artifactId>quarkus-liquibase</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-jdbc-postgresql</artifactId>
+    </dependency>
+
+    <!-- Tracing, Metrics and Health dependencies -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-metrics</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-health</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-opentracing</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-fault-tolerance</artifactId>
+      <groupId>io.opentracing.contrib</groupId>
+      <artifactId>opentracing-jdbc</artifactId>
     </dependency>
-    <!-- Liquibase specific dependencies -->
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-liquibase</artifactId>
-    </dependency>
-    <!-- JDBC driver dependencies -->
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-jdbc-postgresql</artifactId>
-    </dependency>
+
     <!-- SAGAs with narayana-lra -->
     <dependency>
       <groupId>org.eclipse.microprofile.lra</groupId>
@@ -98,12 +104,14 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-arc-deployment</artifactId>
     </dependency>
+
     <!-- Tools -->
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>${guava.version}</version>
     </dependency>
+
     <!-- Test -->
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -116,6 +124,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>
@@ -142,14 +151,12 @@
         <configuration>
           <systemPropertyVariables>
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-            <maven.home>${maven.home}</maven.home>
           </systemPropertyVariables>
         </configuration>
       </plugin>
-
-
     </plugins>
   </build>
+
   <profiles>
     <profile>
       <id>native</id>
@@ -176,7 +183,6 @@
                     </native.image.path>
                     <java.util.logging.manager>org.jboss.logmanager.LogManager
                     </java.util.logging.manager>
-                    <maven.home>${maven.home}</maven.home>
                   </systemPropertyVariables>
                 </configuration>
               </execution>
