@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Priority;
+import javax.enterprise.inject.Instance;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
@@ -24,21 +25,21 @@ public class DockerRewriteContainerRequestFilter implements ContainerRequestFilt
     private static final Logger logger = LoggerFactory.getLogger(DockerRewriteContainerRequestFilter.class.getName());
 
     @ConfigProperty(name = "application.rewrite.base.enabled", defaultValue = "false")
-    public Boolean rewriteEnabled;
+    public Instance<Boolean> rewriteEnabled;
 
     @ConfigProperty(name = "application.rewrite.base.host")
-    public String baseHost;
+    public Instance<String> baseHost;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        if(!rewriteEnabled) {
+        if(!rewriteEnabled.isResolvable() && rewriteEnabled.get() && baseHost.isResolvable()) {
             return;
         }
 
         UriInfo info = requestContext.getUriInfo();
-        if(!info.getBaseUri().getHost().equalsIgnoreCase(baseHost)) {
+        if(!info.getBaseUri().getHost().equalsIgnoreCase(baseHost.get())) {
             String pre = info.getAbsolutePath().toString();
-            requestContext.setRequestUri(info.getBaseUriBuilder().host(baseHost).build(), info.getRequestUriBuilder().host(baseHost).build());
+            requestContext.setRequestUri(info.getBaseUriBuilder().host(baseHost.get()).build(), info.getRequestUriBuilder().host(baseHost.get()).build());
             logger.debug("Rewriting " + pre + " to " + requestContext.getUriInfo().getAbsolutePath().toString());
         }
     }
