@@ -59,7 +59,6 @@ public class ShopOrderResource {
                     Response.Status.Family.CLIENT_ERROR // cancel on any 4xx code
             })
     public Response createShopOrder(@HeaderParam(LRA.LRA_HTTP_CONTEXT_HEADER) String lraUrl,
-                                    @HeaderParam(LRA.LRA_HTTP_RECOVERY_HEADER) String recoveryHeader,
                                     @QueryParam("fail") ForceFail forceFail,
                                     ShopOrderDTO shopOrderDTO) {
 
@@ -67,7 +66,6 @@ public class ShopOrderResource {
         log.info("----------------------------");
         log.info("Create shopOrder: {}", lraUrl);
         log.info("LRA Transaction Id: {}", lraId);
-        log.info("Recovery Header: {}", recoveryHeader);
         log.info("----------------------------");
 
         // create ShopOrder locally

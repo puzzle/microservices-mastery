@@ -27,8 +27,7 @@ public class ArticleStockService {
             }
 
             // handling change log
-            ArticleStockChange asc = new ArticleStockChange(articleStock.getArticle(), articleOrder.amount, lraId);
-            asc.persistAndFlush();
+            new ArticleStockChange(articleStock.getArticle(), articleOrder.amount, lraId).persist();
 
             // handing inventory count
             articleStock.setCount(articleStock.getCount() - articleOrder.amount);

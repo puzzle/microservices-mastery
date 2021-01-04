@@ -1,5 +1,6 @@
 package ch.puzzle.mm.rest.stock.boundary;
 
+import ch.puzzle.mm.rest.stock.control.ArticleStockService;
 import ch.puzzle.mm.rest.util.ForceFail;
 import ch.puzzle.mm.rest.exception.ArticleOutOfStockException;
 import ch.puzzle.mm.rest.monkey.control.ChaosMonkey;
@@ -13,6 +14,7 @@ import org.eclipse.microprofile.lra.annotation.ws.rs.LRA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -26,12 +28,14 @@ public class ArticleStockResource {
 
     private final Logger log = LoggerFactory.getLogger(ArticleStockResource.class.getName());
 
+    @Inject
+    ArticleStockService articleStockService;
+
     @POST
     @ChaosMonkey
     @Transactional
     @LRA(value = LRA.Type.MANDATORY, end = false)
     public Response createStockOrder(@HeaderParam(LRA.LRA_HTTP_CONTEXT_HEADER) String lraUrl,
-                                     @HeaderParam(LRA.LRA_HTTP_RECOVERY_HEADER) String recoveryHeader,
                                      @QueryParam("fail") ForceFail fail,
                                      List<ArticleOrderDTO> articles) throws ArticleOutOfStockException {
 
@@ -41,21 +45,8 @@ public class ArticleStockResource {
         log.info("LRA Transaction Id: {}", lraId);
         log.info("----------------------------");
 
-        for (ArticleOrderDTO articleOrder : articles) {
-            ArticleStock articleStock = ArticleStock.findById(articleOrder.articleId);
-
-            int preOrderAmount = articleStock.getCount();
-            if (articleStock.getCount() < articleOrder.amount) {
-                throw new ArticleOutOfStockException("Article with id " + articleOrder.articleId + " is out of stock.");
-            }
-
-            // handling change log
-            new ArticleStockChange(articleStock.getArticle(), articleOrder.amount, lraId).persist();
-
-            // handing inventory count
-            articleStock.setCount(articleStock.getCount() - articleOrder.amount);
-            log.info("Article with id {} processed. Stock oldCount={}, ordered={}, newCount={}", articleOrder.articleId, preOrderAmount, articleOrder.amount, articleStock.getCount());
-        }
+        // handle stock count
+        articleStockService.orderArticles(articles, lraId);
 
         if(fail == ForceFail.STOCK) {
             return Response.status(Response.Status.PRECONDITION_FAILED).build();
