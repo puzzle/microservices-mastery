@@ -20,13 +20,7 @@ public class ShopOrder extends PanacheEntity {
     @Column(unique=true, nullable = false)
     private String lra;
 
-    public ShopOrder() {
-    }
-
-    public ShopOrder(List<ArticleOrder> articles, ShopOrderStatus status) {
-        this.articleOrders = articles;
-        this.status = status;
-    }
+    public ShopOrder() { }
 
     public List<ArticleOrder> getArticleOrders() {
         return articleOrders;

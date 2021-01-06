@@ -18,7 +18,7 @@ public class ShopOrderService {
         // set lra id
         shopOrder.setLra(lra);
 
-        // create order
+        // create order articles
         List<ArticleOrder> articleOrders = dto.articleOrders.stream()
                 .map(s -> new ArticleOrder(s.articleId, s.amount))
                 .collect(Collectors.toList());
