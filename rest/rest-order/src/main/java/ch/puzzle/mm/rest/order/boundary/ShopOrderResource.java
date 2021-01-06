@@ -1,11 +1,11 @@
 package ch.puzzle.mm.rest.order.boundary;
 
+import ch.puzzle.mm.rest.monkey.control.ChaosMonkey;
 import ch.puzzle.mm.rest.order.control.ShopOrderService;
 import ch.puzzle.mm.rest.order.entity.ShopOrder;
 import ch.puzzle.mm.rest.order.entity.ShopOrderDTO;
 import ch.puzzle.mm.rest.order.entity.ShopOrderStatus;
 import ch.puzzle.mm.rest.stock.boundary.ArticleStockService;
-import ch.puzzle.mm.rest.util.ForceFail;
 import org.eclipse.microprofile.lra.annotation.Compensate;
 import org.eclipse.microprofile.lra.annotation.Complete;
 import org.eclipse.microprofile.lra.annotation.ParticipantStatus;
@@ -48,9 +48,9 @@ public class ShopOrderResource {
     }
 
     @POST
+    @ChaosMonkey
     @Counted(name = "rest_order_create_request", absolute = true, description = "number of orders requested", tags = {"application=rest-order", "resource=ShopOrderResource"})
-    @Timed(name = "rest_order_create_timer", description = "timer for processing a order creation", tags = {"application=rest-order", "resource=ShopOrderResource"})
-    @Transactional
+    @Timed(name = "rest_order_create_timer", absolute = true, description = "timer for processing a order creation", tags = {"application=rest-order", "resource=ShopOrderResource"})
     @LRA(value = LRA.Type.REQUIRES_NEW,
             cancelOn = {
                     Response.Status.INTERNAL_SERVER_ERROR // cancel on a 500 code
@@ -59,7 +59,6 @@ public class ShopOrderResource {
                     Response.Status.Family.CLIENT_ERROR // cancel on any 4xx code
             })
     public Response createShopOrder(@HeaderParam(LRA.LRA_HTTP_CONTEXT_HEADER) String lraUrl,
-                                    @QueryParam("fail") ForceFail forceFail,
                                     ShopOrderDTO shopOrderDTO) {
 
         String lraId = getLraId(lraUrl);
@@ -72,14 +71,9 @@ public class ShopOrderResource {
         ShopOrder shopOrder = shopOrderService.createOrder(shopOrderDTO, lraId);
 
         // call remote service
-        articleStockService.orderArticles(forceFail, shopOrderDTO.articleOrders);
+        articleStockService.orderArticles(shopOrderDTO.articleOrders);
 
-        // Failure simulation
-        if (forceFail == ForceFail.ORDER) {
-            return Response.status(Response.Status.PRECONDITION_FAILED).build();
-        } else {
-            return Response.ok(shopOrder).build();
-        }
+        return Response.ok(shopOrder).build();
     }
 
     @Counted(name = "rest_order_create_success", absolute = true, description = "number of orders successful", tags = {"application=rest-order", "resource=ShopOrderResource"})

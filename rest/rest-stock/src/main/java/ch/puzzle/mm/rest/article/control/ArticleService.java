@@ -11,6 +11,10 @@ import java.util.List;
 @Traced
 public class ArticleService {
 
+    public Article getById(long id) {
+        return Article.findById(id);
+    }
+
     public List<Article> listAll() {
         return Article.findAll().list();
     }

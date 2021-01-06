@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @Entity
 public class ShopOrder extends PanacheEntity {
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ArticleOrder> articleOrders;
 
     @Enumerated(EnumType.STRING)

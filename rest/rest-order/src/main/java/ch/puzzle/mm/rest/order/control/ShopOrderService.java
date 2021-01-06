@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class ShopOrderService {
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Transactional
     public ShopOrder createOrder(ShopOrderDTO dto, String lra) {
         ShopOrder shopOrder = new ShopOrder();
         shopOrder.setStatus(ShopOrderStatus.NEW);
@@ -24,7 +24,7 @@ public class ShopOrderService {
                 .collect(Collectors.toList());
 
         shopOrder.setArticleOrders(articleOrders);
-        shopOrder.persistAndFlush();
+        shopOrder.persist();
 
         return shopOrder;
     }
