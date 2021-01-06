@@ -9,9 +9,6 @@ services:
       - lra-data:/opt/jboss
     networks:
       - rest
-    environment:
-      - AB_JOLOKIA_OFF="true"
-      - THORNTAIL_LOGGING_ROOT-LOGGER.LEVEL=DEBUG
     ports:
       - 8090:8080
 
