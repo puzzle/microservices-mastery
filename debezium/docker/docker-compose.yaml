@@ -112,7 +112,7 @@ services:
     hostname: zookeeper
     container_name: debezium-zookeeper
     networks:
-      - debezium
+      - kafka
     ports:
      - 2181:2181
      - 2888:2888
@@ -125,7 +125,7 @@ services:
     ports:
      - 9092:9092
     networks:
-      - debezium
+      - kafka
     depends_on:
      - zookeeper
     environment:
