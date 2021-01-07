@@ -1,6 +1,7 @@
 package ch.puzzle.mm.monolith.stock.control;
 
 import ch.puzzle.mm.monolith.exception.StockIncompleteException;
+import ch.puzzle.mm.monolith.monkey.control.ChaosMonkey;
 import ch.puzzle.mm.monolith.order.entity.ArticleOrder;
 import ch.puzzle.mm.monolith.stock.entity.ArticleStock;
 import org.eclipse.microprofile.opentracing.Traced;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 public class ArticleStockService {
 
     @Traced
+    @ChaosMonkey
     public void orderArticles(List<ArticleOrder> articleOrders) throws StockIncompleteException {
         List<Long> ids = articleOrders.stream().map(ArticleOrder::getArticleId).collect(Collectors.toList());
         List<ArticleStock> articleStockList = ArticleStock.list("id in ?1", ids);
