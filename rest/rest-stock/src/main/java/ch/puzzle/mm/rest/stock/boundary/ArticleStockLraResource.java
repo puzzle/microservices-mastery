@@ -25,7 +25,7 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class ArticleStockLraResource {
 
-    private final Logger log = LoggerFactory.getLogger(ArticleStockResource.class.getName());
+    private final Logger log = LoggerFactory.getLogger(ArticleStockLraResource.class.getName());
 
     @Inject
     ArticleStockService articleStockService;
