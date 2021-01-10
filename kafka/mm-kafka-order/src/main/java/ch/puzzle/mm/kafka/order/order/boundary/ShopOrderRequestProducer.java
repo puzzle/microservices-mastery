@@ -1,7 +1,6 @@
 package ch.puzzle.mm.kafka.order.order.boundary;
 
 import ch.puzzle.mm.kafka.order.order.entity.ShopOrderDTO;
-import ch.puzzle.mm.kafka.order.util.HeadersMapExtractAdapter;
 import ch.puzzle.mm.kafka.order.util.HeadersMapInjectAdapter;
 import io.opentracing.Scope;
 import io.opentracing.Tracer;
@@ -21,8 +20,6 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class ShopOrderRequestProducer {
 
-    private final Logger log = LoggerFactory.getLogger(ShopOrderRequestProducer.class.getName());
-
     @Inject
     @Channel("shop-order-request")
     Emitter<ShopOrderDTO> emitter;
@@ -40,8 +37,7 @@ public class ShopOrderRequestProducer {
                     .withTopic("shop-order-request")
                     .withHeaders(headersMapInjectAdapter.getRecordHeaders())
                     .build();
-            Message<ShopOrderDTO> message = Message.of(shopOrderDTO, Metadata.of(metadata));
-            emitter.send(message);
+            emitter.send(Message.of(shopOrderDTO, Metadata.of(metadata)));
         }
     }
 }

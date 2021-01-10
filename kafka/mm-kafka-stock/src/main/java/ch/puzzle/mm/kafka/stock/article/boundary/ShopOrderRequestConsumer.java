@@ -8,11 +8,9 @@ import ch.puzzle.mm.kafka.stock.util.HeadersMapInjectAdapter;
 import io.opentracing.Scope;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
-import io.opentracing.contrib.kafka.TracingKafkaUtils;
 import io.opentracing.propagation.Format;
 import io.smallrye.context.SmallRyeManagedExecutor;
 import io.smallrye.reactive.messaging.kafka.IncomingKafkaRecordMetadata;
-import io.smallrye.reactive.messaging.kafka.KafkaRecord;
 import io.smallrye.reactive.messaging.kafka.OutgoingKafkaRecordMetadata;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.opentracing.Traced;
@@ -23,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 @ApplicationScoped
@@ -55,17 +52,16 @@ public class ShopOrderRequestConsumer {
         if (metadata.isPresent()) {
             SpanContext extract = tracer.extract(Format.Builtin.TEXT_MAP, new HeadersMapExtractAdapter(metadata.get().getHeaders()));
             try (Scope scope = tracer.buildSpan("consume-shop-order-request").asChildOf(extract).startActive(true)) {
-                handleMessage(message.getPayload());
+                handleOrder(message.getPayload());
                 return message.ack();
             }
         }
         return message.nack(new RuntimeException());
     }
 
-    private void handleMessage(ShopOrderDTO shopOrderDTO) {
+    private void handleOrder(ShopOrderDTO shopOrderDTO) {
         executor.runAsync(() -> {
             try {
-                articleStockService.orderArticles(shopOrderDTO.articleOrders);
                 articleStockService.orderArticles(shopOrderDTO.articleOrders);
                 confirmShopOrder(shopOrderDTO);
             } catch (ArticleOutOfStockException e) {

@@ -18,14 +18,11 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 @ApplicationScoped
 @Traced
 public class ShopOrderConfirmationConsumer {
-
-    private final Logger logger = LoggerFactory.getLogger(ShopOrderConfirmationConsumer.class.getName());
 
     @Inject
     ShopOrderService shopOrderService;
@@ -42,15 +39,11 @@ public class ShopOrderConfirmationConsumer {
         if (metadata.isPresent()) {
             SpanContext extract = tracer.extract(Format.Builtin.TEXT_MAP, new HeadersMapExtractAdapter(metadata.get().getHeaders()));
             try (Scope scope = tracer.buildSpan("consume-confirmation").asChildOf(extract).startActive(true)) {
-                confirmOrder(message.getPayload());
+                executor.runAsync(() -> shopOrderService.confirmOrder(message.getPayload().id));
                 return message.ack();
             }
         }
         return message.nack(new RuntimeException());
-    }
-
-    private void confirmOrder(ShopOrderDTO shopOrderDTO) {
-        executor.runAsync(() -> shopOrderService.confirmOrder(shopOrderDTO.id));
     }
 }
 

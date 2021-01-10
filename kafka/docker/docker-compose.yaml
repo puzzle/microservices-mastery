@@ -14,9 +14,7 @@ services:
       - 5432:5432
 
   order:
-    build:
-      context: ../mm-kafka-order/.
-      dockerfile: ./src/main/docker/Dockerfile.multistage.jvm
+    image: quay.io/puzzle/microservices-lab-kafka-order:latest
     ports:
       - 8080:8080
     networks:
@@ -42,9 +40,7 @@ services:
       - 5433:5432
 
   stock:
-    build:
-      context: ../mm-kafka-stock/.
-      dockerfile: ./src/main/docker/Dockerfile.multistage.jvm
+    image: quay.io/puzzle/microservices-lab-kafka-stock:latest
     ports:
       - 8081:8080
     networks:
