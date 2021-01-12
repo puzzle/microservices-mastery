@@ -13,4 +13,8 @@ public class ArticleService {
     public List<Article> listAll() {
         return Article.findAll().list();
     }
+
+    public Article getById(long id) {
+        return Article.findById(id);
+    }
 }
