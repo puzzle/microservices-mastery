@@ -33,7 +33,9 @@ public class ErrorResponseTracingFilter implements ContainerResponseFilter {
                 message = "ResponseStatus: " + responseContext.getStatusInfo().getReasonPhrase();
             }
 
-            tracer.scopeManager().active().span().setTag(ERROR_TAG, true).log(message);
+            if(tracer != null && tracer.scopeManager() != null && tracer.scopeManager().active() != null) {
+                tracer.scopeManager().active().span().setTag(ERROR_TAG, true).log(message);
+            }
         }
     }
 }

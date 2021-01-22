@@ -4,13 +4,11 @@ import ch.puzzle.mm.kafka.stock.exception.ArticleOutOfStockException;
 import ch.puzzle.mm.kafka.stock.monkey.control.ChaosMonkey;
 import ch.puzzle.mm.kafka.stock.stock.control.ArticleStockService;
 import ch.puzzle.mm.kafka.stock.stock.entity.ArticleOrderDTO;
+import ch.puzzle.mm.kafka.stock.stock.entity.ArticleStock;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -22,6 +20,11 @@ public class ArticleStockResource {
 
     @Inject
     ArticleStockService articleStockService;
+
+    @GET
+    public Response listAll() {
+        return Response.ok(ArticleStock.listAll()).build();
+    }
 
     @ChaosMonkey
     @POST
