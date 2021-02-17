@@ -1,4 +1,4 @@
-FROM quay.io/quarkus/centos-quarkus-maven:20.1.0-java11 AS build
+FROM quay.io/quarkus/centos-quarkus-maven:20.3.1-java11 AS build
 COPY pom.xml /usr/src/app/
 RUN mvn -f /usr/src/app/pom.xml -B de.qaware.maven:go-offline-maven-plugin:1.2.5:resolve-dependencies
 COPY src /usr/src/app/src
