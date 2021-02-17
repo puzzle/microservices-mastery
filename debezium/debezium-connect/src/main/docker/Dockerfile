@@ -7,7 +7,7 @@ RUN chown -R quarkus /usr/src/app
 USER quarkus
 RUN mvn -f /usr/src/app/pom.xml clean package
 
-FROM strimzi/kafka:0.20.0-kafka-2.6.0 AS connect
+FROM strimzi/kafka:0.20.1-kafka-2.6.0 AS connect
 ENV KAFKA_CONNECT_PLUGIN_PATH=/tmp/connect-plugins
 ENV DEBEZIUM_DIR=$KAFKA_CONNECT_PLUGIN_PATH/debezium-connect
 
