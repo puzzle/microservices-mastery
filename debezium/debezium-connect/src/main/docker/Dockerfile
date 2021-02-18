@@ -21,6 +21,6 @@ COPY src/main/docker/config/* /opt/kafka/custom-config/
 
 RUN mkdir -p $DEBEZIUM_DIR \
     && cd $KAFKA_CONNECT_PLUGIN_PATH \
-    && curl -sfSL https://repo1.maven.org/maven2/io/debezium/debezium-connector-postgres/1.4.0.Beta1/debezium-connector-postgres-1.4.0.Beta1-plugin.tar.gz | tar xz
+    && curl -sfSL https://repo1.maven.org/maven2/io/debezium/debezium-connector-postgres/1.4.1.Final/debezium-connector-postgres-1.4.1.Final-plugin.tar.gz | tar xz
 
 COPY --from=build /usr/src/app/target/event-routers-*.jar $DEBEZIUM_DIR
