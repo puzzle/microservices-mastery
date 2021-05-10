@@ -21,7 +21,7 @@
     <surefire-plugin.version>2.22.2</surefire-plugin.version>
     <guava.version>30.1.1-jre</guava.version>
     <narayana-lra.version>5.10.6.Final</narayana-lra.version>
-    <microprofile-lra.version>1.0-RC3</microprofile-lra.version>
+    <microprofile-lra.version>1.0</microprofile-lra.version>
   </properties>
 
   <dependencyManagement>
