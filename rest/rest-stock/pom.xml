@@ -20,8 +20,8 @@
     <quarkus.platform.version>1.13.3.Final</quarkus.platform.version>
     <surefire-plugin.version>2.22.2</surefire-plugin.version>
     <rest-assured.version>4.3.0</rest-assured.version>
-    <narayana-lra.version>5.10.6.Final</narayana-lra.version>
-    <microprofile-lra.version>1.0-RC3</microprofile-lra.version>
+    <narayana-lra.version>5.12.0.Final</narayana-lra.version>
+    <microprofile-lra.version>1.0</microprofile-lra.version>
   </properties>
 
   <dependencyManagement>
