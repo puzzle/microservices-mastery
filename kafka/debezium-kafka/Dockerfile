@@ -1,4 +1,4 @@
-FROM quay.io/debezium/kafka:1.5
+FROM quay.io/debezium/kafka:1.9
 
 USER root
 COPY jmx_prometheus_javaagent-0.14.0.jar $KAFKA_HOME/jmx_prometheus_javaagent-0.14.0.jar
